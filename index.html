@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MrBeast - 野兽先生传奇</title>
+    <style>
+        /* 全局重置与基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 粒子背景画布 */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+        }
+
+        /* 导航栏 - 增强设计 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 20px 5%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(15px) saturate(1.5);
+            border-bottom: 2px solid;
+            border-image: linear-gradient(90deg, transparent, #d4af37, #ffd700, #d4af37, transparent) 1;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: linear-gradient(45deg, #d4af37, #ffd700, #ff6b35);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, #d4af37, #ffd700, #ff6b35);
+            background-size: 300% 300%;
+            border-radius: 10px;
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        .logo:hover::before {
+            opacity: 0.7;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 12px 18px;
+            border-radius: 25px;
+            overflow: hidden;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, #ffd700, #ff6b35);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: #d4af37;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+            transform: translateY(-2px);
+        }
+
+        /* 英雄区域 - 完全重新设计 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                conic-gradient(from 0deg at 20% 20%, transparent, rgba(212, 175, 55, 0.1), transparent),
+                conic-gradient(from 180deg at 80% 80%, transparent, rgba(255, 107, 53, 0.1), transparent);
+            animation: heroBackground 20s linear infinite;
+        }
+
+        .hero-content {
+            z-index: 10;
+            max-width: 900px;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 6rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+            position: relative;
+            background: linear-gradient(45deg, #d4af37, #ffd700, #ff6b35, #d4af37);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: heroTitle 3s ease-in-out infinite;
+            text-shadow: 0 0 60px rgba(212, 175, 55, 0.5);
+            letter-spacing: -2px;
+        }
+
+        .hero-title::before {
+            content: 'MrBeast';
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(45deg, #ff6b35, #ffd700);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: heroTitleGlow 2s ease-in-out infinite alternate;
+            filter: blur(2px);
+            z-index: -1;
+        }
+
+        .hero-subtitle {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            animation: fadeInUp 2s ease-out 0.5s both;
+        }
+
+        .hero-description {
+            font-size: 1.3rem;
+            color: #cccccc;
+            margin-bottom: 50px;
+            line-height: 1.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 2s ease-out 1s both;
+        }
+
+        /* 浮动统计面板 */
+        .floating-stats {
+            position: absolute;
+            top: 20%;
+            right: 5%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: floatingStats 6s ease-in-out infinite;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            text-align: center;
+            min-width: 120px;
+            transform: rotate(5deg);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:nth-child(2) {
+            transform: rotate(-3deg);
+            animation-delay: 1s;
+        }
+
+        .stat-card:nth-child(3) {
+            transform: rotate(2deg);
+            animation-delay: 2s;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.1) rotate(0deg);
+            border-color: #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #cccccc;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(45deg, #d4af37, #ffd700, #ff6b35);
+            background-size: 300% 300%;
+            color: #0a0a0a;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 15px 35px rgba(212, 175, 55, 0.4),
+                inset 0 2px 10px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: ctaGlow 3s ease-in-out infinite;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 
+                0 25px 50px rgba(212, 175, 55, 0.6),
+                inset 0 2px 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* 斜切分割区域 */
+        .diagonal-section {
+            position: relative;
+            background: linear-gradient(135deg, rgba(15, 15, 15, 0.95), rgba(25, 25, 25, 0.95));
+            transform: skewY(-3deg);
+            margin: 100px 0;
+            padding: 150px 0;
+        }
+
+        .diagonal-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(212, 175, 55, 0.05) 50px,
+                    rgba(212, 175, 55, 0.05) 52px
+                );
+        }
+
+        .diagonal-content {
+            transform: skewY(3deg);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 重新设计的故事区域 */
+        .brand-story {
+            padding: 120px 5%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(10, 10, 10, 0.95), rgba(20, 20, 20, 0.95));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-story::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23d4af37" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23ff6b35" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            animation: grain 20s linear infinite;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-size: 4rem;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+            background: linear-gradient(45deg, #d4af37, #ffd700, #ff6b35);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: sectionTitle 4s ease-in-out infinite;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #d4af37, #ffd700, #ff6b35, transparent);
+            animation: lineGlow 2s ease-in-out infinite alternate;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #cccccc;
+            font-size: 1.4rem;
+            margin-bottom: 80px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 创新的故事卡片布局 */
+        .story-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 50px;
+            margin-top: 80px;
+            perspective: 1000px;
+        }
+
+        .story-card {
+            background: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 25px;
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(212, 175, 55, 0.1), transparent, rgba(255, 107, 53, 0.1), transparent);
+            animation: cardGlow 10s linear infinite;
+            z-index: -1;
+        }
+
+        .story-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, #ffd700, #ff6b35);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .story-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .story-card:hover {
+            transform: translateY(-20px) rotateX(5deg);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 
+                0 30px 60px rgba(212, 175, 55, 0.3),
+                0 0 50px rgba(255, 107, 53, 0.2);
+        }
+
+        .story-icon {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            display: block;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        .story-card h3 {
+            color: #d4af37;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .story-card p {
+            color: #cccccc;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        /* 特色项目区域 - 六边形布局 */
+        .features {
+            padding: 120px 5%;
+            background: 
+                linear-gradient(45deg, rgba(10, 10, 10, 0.95) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(15, 15, 15, 0.95) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(20, 20, 20, 0.95) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(25, 25, 25, 0.95) 75%);
+            background-size: 60px 60px;
+            background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+            position: relative;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 80px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-card {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            transition: all 0.6s ease;
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0% 0%, 100% 0%, 95% 85%, 5% 85%);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 107, 53, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent);
+            transition: all 0.6s ease;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .feature-card:hover::after {
+            width: 400px;
+            height: 400px;
+        }
+
+        .feature-card:hover {
+            transform: scale(1.05) translateY(-15px);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 
+                0 30px 60px rgba(212, 175, 55, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+
+        .feature-icon {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 3;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.7);
+            animation: featureIcon 4s ease-in-out infinite;
+        }
+
+        .feature-card h3 {
+            color: #d4af37;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 3;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .feature-card p {
+            color: #cccccc;
+            line-height: 1.8;
+            position: relative;
+            z-index: 3;
+            font-size: 1.1rem;
+        }
+
+        /* 内容帝国区域 - 全新设计 */
+        .services {
+            padding: 120px 5%;
+            background: 
+                linear-gradient(135deg, rgba(5, 5, 5, 0.95), rgba(15, 15, 15, 0.95)),
+                radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .services::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(212, 175, 55, 0.05), transparent, rgba(255, 107, 53, 0.05), transparent);
+            animation: servicesBg 30s linear infinite;
+        }
+
+        .services-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 80px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .services-content {
+            position: relative;
+        }
+
+        .service-item {
+            margin-bottom: 40px;
+            padding: 35px;
+            background: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border-left: 5px solid #d4af37;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .service-item:hover::before {
+            left: 100%;
+        }
+
+        .service-item:hover {
+            background: rgba(25, 25, 25, 0.95);
+            transform: translateX(15px) scale(1.02);
+            box-shadow: 
+                0 15px 40px rgba(212, 175, 55, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-left-color: #ffd700;
+        }
+
+        .service-item h4 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .service-item p {
+            color: #cccccc;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        /* 3D徽章设计 */
+        .services-visual {
+            text-align: center;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .luxury-badge {
+            display: inline-block;
+            padding: 60px;
+            background: 
+                linear-gradient(45deg, rgba(212, 175, 55, 0.2), rgba(255, 215, 0, 0.2)),
+                radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+            border: 4px solid #d4af37;
+            border-radius: 50%;
+            color: #d4af37;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 
+                0 0 60px rgba(212, 175, 55, 0.5),
+                inset 0 0 30px rgba(212, 175, 55, 0.1),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: badge3D 6s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+            transform-style: preserve-3d;
+        }
+
+        .luxury-badge::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            animation: badgeRing 4s ease-in-out infinite;
+        }
+
+        .luxury-badge::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            animation: badgeRing 4s ease-in-out infinite reverse;
+        }
+
+        /* 粉丝见证区域 - 视频风格 */
+        .testimonials {
+            padding: 120px 5%;
+            background: 
+                linear-gradient(45deg, rgba(10, 10, 10, 0.95), rgba(20, 20, 20, 0.95)),
+                repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(212, 175, 55, 0.02) 36deg, transparent 72deg);
+            position: relative;
+        }
+
+        .testimonial-slider {
+            max-width: 900px;
+            margin: 80px auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .testimonial {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 60px;
+            border-radius: 30px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+            transition: all 0.5s ease;
+        }
+
+        .testimonial::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            font-size: 8rem;
+            color: rgba(212, 175, 55, 0.3);
+            font-family: serif;
+            z-index: 1;
+        }
+
+        .testimonial:hover {
+            transform: scale(1.02);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.2);
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+
+        .testimonial-text {
+            font-size: 1.4rem;
+            color: #cccccc;
+            font-style: italic;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 2;
+        }
+
+        .testimonial-author {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .testimonial-role {
+            color: #aaaaaa;
+            font-size: 1rem;
+        }
+
+        /* 联系区域 - 未来科技风 */
+        .contact {
+            padding: 120px 5%;
+            background: 
+                linear-gradient(135deg, rgba(5, 5, 5, 0.98), rgba(15, 15, 15, 0.98)),
+                radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, transparent 98%, rgba(212, 175, 55, 0.1) 100%),
+                linear-gradient(0deg, transparent 98%, rgba(255, 107, 53, 0.1) 100%);
+            background-size: 50px 50px;
+            animation: grid 20s linear infinite;
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-form {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 60px;
+            border-radius: 30px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #d4af37, #ffd700, #ff6b35);
+            animation: formGlow 3s ease-in-out infinite;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 18px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 
+                0 0 20px rgba(212, 175, 55, 0.3),
+                inset 0 0 10px rgba(212, 175, 55, 0.1);
+            transform: scale(1.02);
+        }
+
+        .contact-info {
+            position: relative;
+        }
+
+        .contact-info h3 {
+            color: #d4af37;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            color: #cccccc;
+            padding: 20px;
+            background: rgba(20, 20, 20, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-item:hover {
+            transform: translateX(10px);
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .contact-item .icon {
+            color: #d4af37;
+            font-size: 2rem;
+            margin-right: 20px;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 页脚 - 科技感增强 */
+        .footer {
+            background: 
+                linear-gradient(135deg, rgba(5, 5, 5, 0.98), rgba(10, 10, 10, 0.98)),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(212, 175, 55, 0.05) 2px,
+                    rgba(212, 175, 55, 0.05) 4px
+                );
+            padding: 80px 5%;
+            text-align: center;
+            border-top: 3px solid;
+            border-image: linear-gradient(90deg, transparent, #d4af37, #ffd700, #ff6b35, transparent) 1;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-logo {
+            font-size: 3rem;
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #d4af37, #ffd700, #ff6b35);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: footerLogo 4s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .footer-text {
+            color: #aaaaaa;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .social-links a {
+            color: #d4af37;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+            padding: 15px;
+            border-radius: 50%;
+            background: rgba(20, 20, 20, 0.5);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .social-links a:hover {
+            color: #ffd700;
+            transform: scale(1.2) translateY(-5px);
+            border-color: #d4af37;
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+        }
+
+        .copyright {
+            color: #666666;
+            font-size: 1rem;
+        }
+
+        /* 关键帧动画定义 */
+        @keyframes logoGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes heroBackground {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes heroTitle {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes heroTitleGlow {
+            0%, 100% { 
+                background-position: 0% 50%;
+                filter: blur(2px);
+            }
+            50% { 
+                background-position: 100% 50%;
+                filter: blur(4px);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatingStats {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes ctaGlow {
+            0%, 100% { 
+                background-position: 0% 50%;
+                box-shadow: 
+                    0 15px 35px rgba(212, 175, 55, 0.4),
+                    inset 0 2px 10px rgba(255, 255, 255, 0.2);
+            }
+            50% { 
+                background-position: 100% 50%;
+                box-shadow: 
+                    0 20px 40px rgba(212, 175, 55, 0.6),
+                    inset 0 2px 10px rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        @keyframes grain {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes sectionTitle {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes lineGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes cardGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes featureIcon {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        @keyframes servicesBg {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes badge3D {
+            0%, 100% { 
+                transform: rotateX(0deg) rotateY(0deg);
+                box-shadow: 
+                    0 0 60px rgba(212, 175, 55, 0.5),
+                    inset 0 0 30px rgba(212, 175, 55, 0.1),
+                    0 20px 40px rgba(0, 0, 0, 0.3);
+            }
+            25% { 
+                transform: rotateX(10deg) rotateY(10deg);
+                box-shadow: 
+                    0 0 80px rgba(212, 175, 55, 0.7),
+                    inset 0 0 40px rgba(212, 175, 55, 0.2),
+                    0 30px 60px rgba(0, 0, 0, 0.4);
+            }
+            50% { 
+                transform: rotateX(0deg) rotateY(20deg);
+                box-shadow: 
+                    0 0 100px rgba(212, 175, 55, 0.8),
+                    inset 0 0 50px rgba(212, 175, 55, 0.2),
+                    0 40px 80px rgba(0, 0, 0, 0.5);
+            }
+            75% { 
+                transform: rotateX(-10deg) rotateY(10deg);
+                box-shadow: 
+                    0 0 80px rgba(212, 175, 55, 0.7),
+                    inset 0 0 40px rgba(212, 175, 55, 0.2),
+                    0 30px 60px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        @keyframes badgeRing {
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 0.3; 
+            }
+            50% { 
+                transform: scale(1.1); 
+                opacity: 0.6; 
+            }
+        }
+
+        @keyframes grid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        @keyframes formGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes footerLogo {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* 响应式设计增强 */
+        @media (max-width: 1200px) {
+            .floating-stats {
+                position: relative;
+                top: auto;
+                right: auto;
+                flex-direction: row;
+                justify-content: center;
+                margin-top: 30px;
+            }
+            
+            .services-container {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+            
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 4rem;
+            }
+            
+            .section-title {
+                font-size: 3rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .story-grid,
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stat-card {
+                transform: none;
+            }
+            
+            .diagonal-section {
+                transform: none;
+                margin: 50px 0;
+                padding: 100px 0;
+            }
+            
+            .diagonal-content {
+                transform: none;
+            }
+        }
+
+        /* 滚动动画保持不变 */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-animate.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- 粒子背景画布 -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">MrBeast</div>
+            <ul class="nav-links">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#story">传奇故事</a></li>
+                <li><a href="#features">惊人项目</a></li>
+                <li><a href="#services">内容帝国</a></li>
+                <li><a href="#testimonials">粉丝见证</a></li>
+                <li><a href="#contact">关注野兽</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="hero">
+        <div class="floating-stats">
+            <div class="stat-card">
+                <div class="stat-number">200M+</div>
+                <div class="stat-label">订阅者</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">$100M+</div>
+                <div class="stat-label">慈善捐赠</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">50B+</div>
+                <div class="stat-label">总观看</div>
+            </div>
+        </div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">MrBeast</h1>
+            <p class="hero-subtitle">野兽先生 · YouTube传奇</p>
+            <p class="hero-description">
+                从13岁在卧室拍视频到全球最具影响力的YouTuber，Jimmy Donaldson以其疯狂的挑战、
+                巨额慈善和改变世界的决心，重新定义了什么叫做"内容创作"。每个视频都是几百万美元的投资，
+                每个项目都在推动人类的善良极限。
+            </p>
+            <a href="#story" class="cta-button">探索野兽传奇</a>
+        </div>
+    </section>
+
+    <!-- 斜切分割 -->
+    <div class="diagonal-section">
+        <div class="diagonal-content">
+            <!-- 品牌故事区域 -->
+            <section id="story" class="brand-story">
+                <div class="container">
+                    <h2 class="section-title scroll-animate">传奇起源</h2>
+                    <p class="section-subtitle scroll-animate">从零到YouTube之王的不可思议旅程</p>
+                    
+                    <div class="story-grid">
+                        <div class="story-card scroll-animate">
+                            <div class="story-icon">🎬</div>
+                            <h3>内容痴狂者</h3>
+                            <p>13岁开始拍摄YouTube视频，每天研究算法超过10小时，6年来上传了数千个视频，只为找到那个完美的病毒式传播公式。从几个观看量到现在的亿万粉丝帝国。</p>
+                        </div>
+                        
+                        <div class="story-card scroll-animate">
+                            <div class="story-icon">💰</div>
+                            <h3>金钱重新定义者</h3>
+                            <p>将赚来的每一分钱都重新投入到更大的视频制作中。不是为了囤积财富，而是为了创造更震撼的内容，帮助更多人，推动慈善事业的边界。</p>
+                        </div>
+                        
+                        <div class="story-card scroll-animate">
+                            <div class="story-icon">🌍</div>
+                            <h3>世界改变者</h3>
+                            <p>通过Team Trees种植2000万棵树，Team Seas清理3000万磅海洋垃圾，建立免费食品银行，资助白内障手术。用娱乐的力量推动真正的社会改变。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 产品特性区域 -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title scroll-animate">惊人项目</h2>
+            <p class="section-subtitle scroll-animate">每一个项目都在挑战不可能</p>
+            
+            <div class="features-grid">
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">🏝️</div>
+                    <h3>极限挑战</h3>
+                    <p>50小时埋在地下、7天困在岛上、24小时在冰中生存，每个挑战都推动人体和心理的极限，为观众带来前所未有的观看体验。</p>
+                </div>
+                
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">🎁</div>
+                    <h3>疯狂赠礼</h3>
+                    <p>随手送出价值100万美元的私人岛屿、10万美元现金、豪华超跑。每个视频都是一场改变他人生活的盛宴，慷慨程度令全世界震惊。</p>
+                </div>
+                
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">🍫</div>
+                    <h3>Feastables帝国</h3>
+                    <p>打造出与Hershey's竞争的巧克力品牌，每块巧克力都承载着改变糖果工业的使命，将健康美味与疯狂营销完美结合。</p>
+                </div>
+                
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">🍔</div>
+                    <h3>Beast Burger连锁</h3>
+                    <p>无实体店面却遍布全球的虚拟餐厅帝国，重新定义快餐业，让粉丝在世界任何角落都能品尝到"野兽"级别的美食体验。</p>
+                </div>
+                
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">📊</div>
+                    <h3>数据驱动创新</h3>
+                    <p>每个视频都基于深度数据分析，从缩略图到标题再到内容节奏，一切都经过科学计算，追求完美的观众体验和病毒传播效果。</p>
+                </div>
+                
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">🌟</div>
+                    <h3>团队传奇</h3>
+                    <p>Chris、Chandler、Karl等成员组成的黄金团队，每个人都有独特人格魅力，共同创造了YouTube史上最具娱乐性的内容组合。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服务体验区域 -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title scroll-animate">内容帝国</h2>
+            <p class="section-subtitle scroll-animate">重新定义娱乐与慈善的边界</p>
+            
+            <div class="services-container">
+                <div class="services-content scroll-animate">
+                    <div class="service-item">
+                        <h4>每月1亿+观看</h4>
+                        <p>主频道订阅者超过2亿，每个视频都能获得数千万观看量，影响力覆盖全球各个年龄层，是当代最具影响力的内容创作者。</p>
+                    </div>
+                    
+                    <div class="service-item">
+                        <h4>多频道矩阵</h4>
+                        <p>MrBeast Gaming、MrBeast Shorts、Beast Reacts等多个频道组成内容帝国，每个频道都有独特定位，满足不同观众需求。</p>
+                    </div>
+                    
+                    <div class="service-item">
+                        <h4>慈善影响力</h4>
+                        <p>已捐赠超过1000万美元，影响数百万人生活，将娱乐与公益完美结合，证明内容创作者也能成为社会改变的重要力量。</p>
+                    </div>
+                    
+                    <div class="service-item">
+                        <h4>商业创新</h4>
+                        <p>从YouTube广告收入到品牌合作、产品销售、投资项目，建立了完整的商业生态系统，年收入数亿美元全部用于更大的项目。</p>
+                    </div>
+                </div>
+                
+                <div class="services-visual scroll-animate">
+                    <div class="luxury-badge">
+                        YOUTUBE<br>KING<br>👑 野兽传奇 👑
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 客户见证区域 -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <h2 class="section-title scroll-animate">粉丝见证</h2>
+            <p class="section-subtitle scroll-animate">来自全球观众的真实感受</p>
+            
+            <div class="testimonial-slider">
+                <div class="testimonial scroll-animate">
+                    <p class="testimonial-text">
+                        "MrBeast不只是YouTuber，他是我们这代人的英雄。看到有人能够如此慷慨地帮助他人，同时创造出最有趣的内容，真的重新定义了我对成功的理解。每个视频都让我相信世界还有希望。"
+                    </p>
+                    <div class="testimonial-author">Sarah Chen</div>
+                    <div class="testimonial-role">忠实粉丝 / 18岁大学生</div>
+                </div>
+                
+                <div class="testimonial scroll-animate">
+                    <p class="testimonial-text">
+                        "作为内容创作者，MrBeast让我明白什么叫真正的dedication。他对内容质量的执着，对粉丝的关爱，对慈善的热忱，完全改变了我对这个行业的看法。他不只是在做视频，他在改变世界。"
+                    </p>
+                    <div class="testimonial-author">Tyler Martinez</div>
+                    <div class="testimonial-role">YouTube创作者 / 25万订阅者</div>
+                </div>
+                
+                <div class="testimonial scroll-animate">
+                    <p class="testimonial-text">
+                        "Jimmy的慈善项目让我获得了免费的白内障手术，重新看到了这个世界。他证明了网红也能真正改变他人的生活。看到他的成功，我更加相信善良和努力能够创造奇迹。"
+                    </p>
+                    <div class="testimonial-author">Maria Rodriguez</div>
+                    <div class="testimonial-role">慈善项目受益者</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系互动区域 -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title scroll-animate">关注野兽</h2>
+            <p class="section-subtitle scroll-animate">加入全球最疯狂的内容社区</p>
+            
+            <div class="contact-container">
+                <div class="contact-form scroll-animate">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">你的名字</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">邮箱地址</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">手机号码</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">想对MrBeast说什么？</label>
+                            <textarea id="message" name="message" rows="5" placeholder="分享你的故事，或者告诉我们你最喜欢的MrBeast视频..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="cta-button">发送消息</button>
+                    </form>
+                </div>
+                
+                <div class="contact-info scroll-animate">
+                    <h3>关注野兽先生</h3>
+                    
+                    <div class="contact-item">
+                        <span class="icon">📺</span>
+                        <span>YouTube: @MrBeast (200M+ 订阅者)</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="icon">📷</span>
+                        <span>Instagram: @mrbeast (50M+ 粉丝)</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="icon">🐦</span>
+                        <span>Twitter: @MrBeast (20M+ 粉丝)</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="icon">📱</span>
+                        <span>TikTok: @mrbeast (100M+ 粉丝)</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="icon">🍫</span>
+                        <span>Feastables.com (官方巧克力)</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="icon">🍔</span>
+                        <span>BeastBurger.com (官方汉堡)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">MrBeast</div>
+            <p class="footer-text">改变世界，一个视频一个善举 | 全球最疯狂的内容创作者</p>
+            
+            <div class="social-links">
+                <a href="#" title="YouTube">📺</a>
+                <a href="#" title="Instagram">📷</a>
+                <a href="#" title="Twitter">🐦</a>
+                <a href="#" title="TikTok">📱</a>
+                <a href="#" title="Feastables">🍫</a>
+            </div>
+            
+            <p class="copyright">
+                © 2024 MrBeast内容帝国. 持续改变世界中... | 善良传播 | 梦想成真 | 野兽永不停歇
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 粒子系统类
+        class ParticleSystem {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.particleCount = 200;
+                this.mouse = { x: 0, y: 0 };
+                
+                this.init();
+                this.setupEventListeners();
+                this.animate();
+            }
+            
+            init() {
+                this.resize();
+                for (let i = 0; i < this.particleCount; i++) {
+                    this.particles.push(this.createParticle());
+                }
+            }
+            
+            createParticle() {
+                return {
+                    x: Math.random() * this.canvas.width,
+                    y: Math.random() * this.canvas.height,
+                    vx: (Math.random() - 0.5) * 1,
+                    vy: (Math.random() - 0.5) * 1,
+                    radius: Math.random() * 3 + 1,
+                    opacity: Math.random() * 0.8 + 0.2,
+                    life: Math.random() * 300 + 100,
+                    color: Math.random() > 0.5 ? '#d4af37' : '#ff6b35'
+                };
+            }
+            
+            setupEventListeners() {
+                window.addEventListener('resize', () => this.resize());
+                document.addEventListener('mousemove', (e) => {
+                    this.mouse.x = e.clientX;
+                    this.mouse.y = e.clientY;
+                });
+            }
+            
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+            
+            updateParticles() {
+                for (let i = 0; i < this.particles.length; i++) {
+                    const particle = this.particles[i];
+                    
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    const dx = this.mouse.x - particle.x;
+                    const dy = this.mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        const force = (150 - distance) / 150;
+                        particle.vx -= (dx / distance) * force * 0.02;
+                        particle.vy -= (dy / distance) * force * 0.02;
+                    }
+                    
+                    if (particle.x < 0 || particle.x > this.canvas.width) {
+                        particle.vx *= -1;
+                    }
+                    if (particle.y < 0 || particle.y > this.canvas.height) {
+                        particle.vy *= -1;
+                    }
+                    
+                    particle.life--;
+                    if (particle.life <= 0) {
+                        this.particles[i] = this.createParticle();
+                    }
+                }
+            }
+            
+            drawParticles() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                for (let i = 0; i < this.particles.length; i++) {
+                    const particle = this.particles[i];
+                    
+                    this.ctx.save();
+                    this.ctx.globalAlpha = particle.opacity;
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.shadowBlur = 15;
+                    this.ctx.shadowColor = particle.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.restore();
+                }
+                
+                this.drawConnections();
+            }
+            
+            drawConnections() {
+                for (let i = 0; i < this.particles.length; i++) {
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const p1 = this.particles[i];
+                        const p2 = this.particles[j];
+                        
+                        const dx = p1.x - p2.x;
+                        const dy = p1.y - p2.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            const opacity = (100 - distance) / 100 * 0.3;
+                            
+                            this.ctx.save();
+                            this.ctx.globalAlpha = opacity;
+                            this.ctx.strokeStyle = p1.color === p2.color ? p1.color : '#d4af37';
+                            this.ctx.lineWidth = 1;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(p1.x, p1.y);
+                            this.ctx.lineTo(p2.x, p2.y);
+                            this.ctx.stroke();
+                            this.ctx.restore();
+                        }
+                    }
+                }
+            }
+            
+            animate() {
+                this.updateParticles();
+                this.drawParticles();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+        
+        class ScrollAnimator {
+            constructor() {
+                this.elements = document.querySelectorAll('.scroll-animate');
+                this.init();
+            }
+            
+            init() {
+                this.checkScroll();
+                window.addEventListener('scroll', () => this.checkScroll());
+                window.addEventListener('resize', () => this.checkScroll());
+            }
+            
+            checkScroll() {
+                const triggerBottom = window.innerHeight / 5 * 4;
+                
+                this.elements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    
+                    if (elementTop < triggerBottom) {
+                        element.classList.add('active');
+                    }
+                });
+            }
+        }
+        
+        class NavbarHandler {
+            constructor() {
+                this.navbar = document.querySelector('.navbar');
+                this.init();
+            }
+            
+            init() {
+                window.addEventListener('scroll', () => this.handleScroll());
+            }
+            
+            handleScroll() {
+                if (window.scrollY > 100) {
+                    this.navbar.style.background = 'rgba(5, 5, 5, 0.98)';
+                    this.navbar.style.backdropFilter = 'blur(20px) saturate(1.8)';
+                } else {
+                    this.navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+                    this.navbar.style.backdropFilter = 'blur(15px) saturate(1.5)';
+                }
+            }
+        }
+        
+        class SmoothScroll {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                const links = document.querySelectorAll('a[href^="#"]');
+                
+                links.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        
+                        const targetId = link.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
+                        
+                        if (targetElement) {
+                            const offsetTop = targetElement.offsetTop - 80;
+                            
+                            window.scrollTo({
+                                top: offsetTop,
+                                behavior: 'smooth'
+                            });
+                        }
+                    });
+                });
+            }
+        }
+        
+        class FormHandler {
+            constructor() {
+                this.form = document.querySelector('form');
+                this.init();
+            }
+            
+            init() {
+                if (this.form) {
+                    this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                }
+            }
+            
+            handleSubmit(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this.form);
+                const data = Object.fromEntries(formData);
+                
+                if (!data.name || !data.email) {
+                    alert('请填写姓名和邮箱地址！');
+                    return;
+                }
+                
+                const button = this.form.querySelector('button');
+                const originalText = button.textContent;
+                
+                button.textContent = '发送中...';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    alert('消息已发送！感谢你对MrBeast的支持！');
+                    this.form.reset();
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }
+        }
+        
+        // 添加鼠标跟随特效
+        class MouseFollower {
+            constructor() {
+                this.cursor = document.createElement('div');
+                this.cursor.className = 'cursor-follower';
+                this.cursor.style.cssText = `
+                    position: fixed;
+                    width: 20px;
+                    height: 20px;
+                    background: radial-gradient(circle, rgba(212, 175, 55, 0.8), transparent);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 9999;
+                    transition: transform 0.1s ease;
+                `;
+                document.body.appendChild(this.cursor);
+                
+                this.init();
+            }
+            
+            init() {
+                document.addEventListener('mousemove', (e) => {
+                    this.cursor.style.left = e.clientX - 10 + 'px';
+                    this.cursor.style.top = e.clientY - 10 + 'px';
+                });
+                
+                document.addEventListener('mousedown', () => {
+                    this.cursor.style.transform = 'scale(1.5)';
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    this.cursor.style.transform = 'scale(1)';
+                });
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('particleCanvas');
+            new ParticleSystem(canvas);
+            
+            new ScrollAnimator();
+            new NavbarHandler();
+            new SmoothScroll();
+            new FormHandler();
+            new MouseFollower();
+            
+            // 页面加载动画增强
+            document.body.style.opacity = '0';
+            document.body.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 1.5s ease, transform 1.5s ease';
+                document.body.style.opacity = '1';
+                document.body.style.transform = 'scale(1)';
+            }, 100);
+        });
+    </script>
+</body>
+</html> 
