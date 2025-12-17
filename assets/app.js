@@ -231,6 +231,7 @@
       this.dpr = 1;
       this.connectionDistance = 100;
       this.pointerDistance = 150;
+      this.connectionGrid = new Map();
 
       this._onResize = rafThrottle(() => this.resize(true));
       this._onVisibility = () => this.onVisibilityChange();
@@ -403,13 +404,16 @@
 
       const cellSize = this.connectionDistance;
       const maxDistance2 = cellSize * cellSize;
-      const grid = new Map();
+      const grid = this.connectionGrid;
+      grid.clear();
+
+      const cellKey = (cx, cy) => ((cx & 0xffff) << 16) | (cy & 0xffff);
 
       for (let i = 0; i < n; i++) {
         const p = particles[i];
         const cx = Math.floor(p.x / cellSize);
         const cy = Math.floor(p.y / cellSize);
-        const key = `${cx},${cy}`;
+        const key = cellKey(cx, cy);
         let bucket = grid.get(key);
         if (!bucket) {
           bucket = [];
@@ -425,7 +429,7 @@
 
         for (let ox = -1; ox <= 1; ox++) {
           for (let oy = -1; oy <= 1; oy++) {
-            const key = `${cx + ox},${cy + oy}`;
+            const key = cellKey(cx + ox, cy + oy);
             const bucket = grid.get(key);
             if (!bucket) continue;
 
@@ -528,7 +532,8 @@
 
     attach(el) {
       if (!(el instanceof HTMLElement)) return;
-      if (el.querySelector(':scope > .spotlight-glow')) return;
+      const firstChild = el.firstElementChild;
+      if (firstChild && firstChild.classList.contains('spotlight-glow')) return;
 
       const glow = document.createElement('span');
       glow.className = 'spotlight-glow';
@@ -765,7 +770,9 @@
       this.navbar = document.querySelector('.navbar');
       this.toggle = document.querySelector('.nav-toggle');
       this.backdrop = document.querySelector('[data-nav-backdrop]');
+      this.navList = document.getElementById('primary-navigation');
       this.links = Array.from(document.querySelectorAll('#primary-navigation a[href^=\"#\"]'));
+      this.mqMobile = window.matchMedia('(max-width: 768px)');
 
       this._onScroll = rafThrottle(() => this.handleScroll());
       this.sectionObserver = null;
@@ -784,13 +791,20 @@
         this.closeMenu();
       });
 
-      const navList = document.getElementById('primary-navigation');
-      navList?.addEventListener('click', (e) => {
+      this.navList?.addEventListener('click', (e) => {
         const a = e.target instanceof Element ? e.target.closest('a[href^=\"#\"]') : null;
         if (!a) return;
         this.closeMenu();
       });
 
+      const onMqChange = () => this.updateMenuAccessibility();
+      if (typeof this.mqMobile.addEventListener === 'function') {
+        this.mqMobile.addEventListener('change', onMqChange);
+      } else if (typeof this.mqMobile.addListener === 'function') {
+        this.mqMobile.addListener(onMqChange);
+      }
+
+      this.updateMenuAccessibility();
       this.initActiveSection();
       this.applyActiveFromHash();
       window.addEventListener('hashchange', () => this.applyActiveFromHash());
@@ -815,6 +829,12 @@
         window.clearTimeout(this.backdropHideTimer);
         this.backdrop.hidden = false;
       }
+
+      this.updateMenuAccessibility();
+      if (this.mqMobile.matches) {
+        const firstLink = this.navList?.querySelector('a[href^=\"#\"]');
+        if (firstLink instanceof HTMLElement) firstLink.focus({ preventScroll: true });
+      }
     }
 
     closeMenu() {
@@ -828,6 +848,11 @@
           if (!this.isOpen()) this.backdrop.hidden = true;
         }, 240);
       }
+
+      this.updateMenuAccessibility();
+      if (this.mqMobile.matches && this.toggle instanceof HTMLElement) {
+        this.toggle.focus({ preventScroll: true });
+      }
     }
 
     toggleMenu() {
@@ -836,6 +861,29 @@
         return;
       }
       this.openMenu();
+    }
+
+    updateMenuAccessibility() {
+      if (!this.navList) return;
+
+      const isMobile = this.mqMobile.matches;
+      if (!isMobile) {
+        this.navList.removeAttribute('aria-hidden');
+        this.navList.removeAttribute('inert');
+        if ('inert' in this.navList) this.navList.inert = false;
+        return;
+      }
+
+      const isOpen = this.isOpen();
+      this.navList.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+
+      if ('inert' in this.navList) {
+        this.navList.inert = !isOpen;
+      } else if (!isOpen) {
+        this.navList.setAttribute('inert', '');
+      } else {
+        this.navList.removeAttribute('inert');
+      }
     }
 
     setActiveLink(id) {
@@ -1083,11 +1131,26 @@
     });
   };
 
+  const initScrollProgress = () => {
+    const root = document.documentElement;
+
+    const update = rafThrottle(() => {
+      const max = root.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? clamp(window.scrollY / max, 0, 1) : 0;
+      root.style.setProperty('--scroll-progress', String(progress));
+    });
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  };
+
   onReady(() => {
     document.documentElement.classList.add('js');
 
     setCurrentYear();
     initToTop();
+    initScrollProgress();
 
     const toast = new Toast(document.getElementById('toast-root'));
     const confetti = new Confetti(document.getElementById('fxCanvas'));
