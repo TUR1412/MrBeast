@@ -397,29 +397,60 @@
 
     drawConnections() {
       if (!this.ctx) return;
-      const n = this.particles.length;
-      const maxDistance2 = this.connectionDistance * this.connectionDistance;
+      const particles = this.particles;
+      const n = particles.length;
+      if (n < 2) return;
+
+      const cellSize = this.connectionDistance;
+      const maxDistance2 = cellSize * cellSize;
+      const grid = new Map();
 
       for (let i = 0; i < n; i++) {
-        const p1 = this.particles[i];
-        for (let j = i + 1; j < n; j++) {
-          const p2 = this.particles[j];
-          const dx = p1.x - p2.x;
-          const dy = p1.y - p2.y;
-          const d2 = dx * dx + dy * dy;
+        const p = particles[i];
+        const cx = Math.floor(p.x / cellSize);
+        const cy = Math.floor(p.y / cellSize);
+        const key = `${cx},${cy}`;
+        let bucket = grid.get(key);
+        if (!bucket) {
+          bucket = [];
+          grid.set(key, bucket);
+        }
+        bucket.push(i);
+      }
 
-          if (d2 >= maxDistance2) continue;
+      for (let i = 0; i < n; i++) {
+        const p1 = particles[i];
+        const cx = Math.floor(p1.x / cellSize);
+        const cy = Math.floor(p1.y / cellSize);
 
-          const opacity = (1 - d2 / maxDistance2) * 0.26;
-          this.ctx.save();
-          this.ctx.globalAlpha = opacity;
-          this.ctx.strokeStyle = p1.color === p2.color ? p1.color : '#d4af37';
-          this.ctx.lineWidth = 1;
-          this.ctx.beginPath();
-          this.ctx.moveTo(p1.x, p1.y);
-          this.ctx.lineTo(p2.x, p2.y);
-          this.ctx.stroke();
-          this.ctx.restore();
+        for (let ox = -1; ox <= 1; ox++) {
+          for (let oy = -1; oy <= 1; oy++) {
+            const key = `${cx + ox},${cy + oy}`;
+            const bucket = grid.get(key);
+            if (!bucket) continue;
+
+            for (let b = 0; b < bucket.length; b++) {
+              const j = bucket[b];
+              if (j <= i) continue;
+
+              const p2 = particles[j];
+              const dx = p1.x - p2.x;
+              const dy = p1.y - p2.y;
+              const d2 = dx * dx + dy * dy;
+              if (d2 >= maxDistance2) continue;
+
+              const opacity = (1 - d2 / maxDistance2) * 0.26;
+              this.ctx.save();
+              this.ctx.globalAlpha = opacity;
+              this.ctx.strokeStyle = p1.color === p2.color ? p1.color : '#d4af37';
+              this.ctx.lineWidth = 1;
+              this.ctx.beginPath();
+              this.ctx.moveTo(p1.x, p1.y);
+              this.ctx.lineTo(p2.x, p2.y);
+              this.ctx.stroke();
+              this.ctx.restore();
+            }
+          }
         }
       }
     }
@@ -478,6 +509,254 @@
         const top = el.getBoundingClientRect().top;
         if (top < triggerBottom) el.classList.add('active');
       });
+    }
+  }
+
+  class Spotlight {
+    constructor() {
+      this.targets = [];
+    }
+
+    init() {
+      if (prefersReducedMotion() || isCoarsePointer()) return;
+
+      this.targets = Array.from(document.querySelectorAll('[data-spotlight]'));
+      if (!this.targets.length) return;
+
+      this.targets.forEach((el) => this.attach(el));
+    }
+
+    attach(el) {
+      if (!(el instanceof HTMLElement)) return;
+      if (el.querySelector(':scope > .spotlight-glow')) return;
+
+      const glow = document.createElement('span');
+      glow.className = 'spotlight-glow';
+      glow.setAttribute('aria-hidden', 'true');
+      el.insertBefore(glow, el.firstChild);
+
+      let rafId = 0;
+      let lastX = 0;
+      let lastY = 0;
+
+      const update = () => {
+        rafId = 0;
+        const rect = el.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) return;
+
+        const px = clamp((lastX - rect.left) / rect.width, 0, 1) * 100;
+        const py = clamp((lastY - rect.top) / rect.height, 0, 1) * 100;
+        el.style.setProperty('--spot-x', `${px.toFixed(2)}%`);
+        el.style.setProperty('--spot-y', `${py.toFixed(2)}%`);
+      };
+
+      const onMove = (e) => {
+        lastX = e.clientX;
+        lastY = e.clientY;
+        if (rafId) return;
+        rafId = requestAnimationFrame(update);
+      };
+
+      const onLeave = () => {
+        el.style.removeProperty('--spot-x');
+        el.style.removeProperty('--spot-y');
+      };
+
+      const onFocus = () => {
+        el.style.setProperty('--spot-x', '50%');
+        el.style.setProperty('--spot-y', '35%');
+      };
+
+      el.addEventListener('pointermove', onMove, { passive: true });
+      el.addEventListener('pointerleave', onLeave, { passive: true });
+      el.addEventListener('focusin', onFocus, { passive: true });
+    }
+  }
+
+  class Carousel {
+    constructor(root, { intervalMs = 6500 } = {}) {
+      this.root = root;
+      this.viewport = root?.querySelector('[data-viewport]') || null;
+      this.track = root?.querySelector('[data-track]') || null;
+      this.dotsRoot = root?.querySelector('[data-dots]') || null;
+      this.prevBtn = root?.querySelector('[data-prev]') || null;
+      this.nextBtn = root?.querySelector('[data-next]') || null;
+
+      this.slides = [];
+      this.dots = [];
+      this.index = 0;
+      this.intervalMs = intervalMs;
+      this.timer = 0;
+      this.drag = { active: false, pointerId: 0, startX: 0, currentX: 0 };
+    }
+
+    init() {
+      if (!(this.root instanceof HTMLElement)) return;
+      if (!(this.track instanceof HTMLElement)) return;
+
+      this.slides = Array.from(this.track.children).filter((el) => el instanceof HTMLElement);
+      if (!this.slides.length) return;
+
+      this.root.tabIndex = 0;
+      this.buildDots();
+      this.apply(true);
+
+      this.prevBtn?.addEventListener('click', () => this.prev());
+      this.nextBtn?.addEventListener('click', () => this.next());
+
+      this.root.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') this.prev();
+        if (e.key === 'ArrowRight') this.next();
+      });
+
+      this.root.addEventListener('pointerenter', () => this.pause(), { passive: true });
+      this.root.addEventListener('pointerleave', () => this.play(), { passive: true });
+      this.root.addEventListener('focusin', () => this.pause());
+      this.root.addEventListener('focusout', () => this.play());
+
+      this.viewport?.addEventListener('pointerdown', (e) => this.onPointerDown(e));
+
+      if (!prefersReducedMotion()) this.play();
+    }
+
+    buildDots() {
+      if (!(this.dotsRoot instanceof HTMLElement)) return;
+      this.dotsRoot.innerHTML = '';
+      this.dots = [];
+
+      for (let i = 0; i < this.slides.length; i++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'carousel-dot';
+        btn.setAttribute('aria-label', `第 ${i + 1} 条见证`);
+        btn.addEventListener('click', () => this.go(i));
+        this.dotsRoot.appendChild(btn);
+        this.dots.push(btn);
+      }
+    }
+
+    width() {
+      if (!(this.viewport instanceof HTMLElement)) return 1;
+      const rect = this.viewport.getBoundingClientRect();
+      return Math.max(1, rect.width);
+    }
+
+    clampIndex(i) {
+      if (!this.slides.length) return 0;
+      const max = this.slides.length - 1;
+      return clamp(i, 0, max);
+    }
+
+    apply(initial = false) {
+      if (!(this.track instanceof HTMLElement)) return;
+
+      const pct = this.index * 100;
+      this.track.style.transform = `translate3d(-${pct}%, 0, 0)`;
+
+      this.slides.forEach((slide, i) => {
+        slide.setAttribute('aria-hidden', i === this.index ? 'false' : 'true');
+        slide.tabIndex = i === this.index ? 0 : -1;
+      });
+
+      this.dots.forEach((dot, i) => {
+        dot.setAttribute('aria-current', i === this.index ? 'true' : 'false');
+      });
+
+      if (initial) return;
+    }
+
+    go(i) {
+      this.index = this.clampIndex(i);
+      this.apply();
+    }
+
+    next() {
+      if (!this.slides.length) return;
+      const nextIndex = this.index >= this.slides.length - 1 ? 0 : this.index + 1;
+      this.go(nextIndex);
+    }
+
+    prev() {
+      if (!this.slides.length) return;
+      const prevIndex = this.index <= 0 ? this.slides.length - 1 : this.index - 1;
+      this.go(prevIndex);
+    }
+
+    play() {
+      if (prefersReducedMotion()) return;
+      if (this.timer) return;
+      this.timer = window.setInterval(() => {
+        const nextIndex = (this.index + 1) % this.slides.length;
+        this.go(nextIndex);
+      }, this.intervalMs);
+    }
+
+    pause() {
+      if (!this.timer) return;
+      window.clearInterval(this.timer);
+      this.timer = 0;
+    }
+
+    onPointerDown(e) {
+      if (!this.viewport || !this.track) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      this.pause();
+
+      this.drag.active = true;
+      this.drag.pointerId = e.pointerId;
+      this.drag.startX = e.clientX;
+      this.drag.currentX = e.clientX;
+
+      this.track.classList.add('is-dragging');
+      this.viewport.setPointerCapture(e.pointerId);
+
+      const onMove = (ev) => this.onPointerMove(ev);
+      const onUp = (ev) => this.onPointerUp(ev, onMove, onUp);
+
+      this.viewport.addEventListener('pointermove', onMove);
+      this.viewport.addEventListener('pointerup', onUp);
+      this.viewport.addEventListener('pointercancel', onUp);
+    }
+
+    onPointerMove(e) {
+      if (!this.drag.active) return;
+      if (e.pointerId !== this.drag.pointerId) return;
+      if (!this.track) return;
+
+      const w = this.width();
+      const delta = e.clientX - this.drag.startX;
+      let damped = delta;
+
+      if (this.index === 0 && delta > 0) damped = delta * 0.35;
+      if (this.index === this.slides.length - 1 && delta < 0) damped = delta * 0.35;
+
+      const base = -this.index * w;
+      this.track.style.transform = `translate3d(${base + damped}px, 0, 0)`;
+      this.drag.currentX = e.clientX;
+    }
+
+    onPointerUp(e, onMove, onUp) {
+      if (!this.drag.active) return;
+      if (e.pointerId !== this.drag.pointerId) return;
+      if (!this.viewport || !this.track) return;
+
+      this.drag.active = false;
+      this.track.classList.remove('is-dragging');
+
+      this.viewport.removeEventListener('pointermove', onMove);
+      this.viewport.removeEventListener('pointerup', onUp);
+      this.viewport.removeEventListener('pointercancel', onUp);
+
+      const w = this.width();
+      const delta = this.drag.currentX - this.drag.startX;
+      const threshold = w * 0.18;
+
+      if (delta > threshold) this.prev();
+      else if (delta < -threshold) this.next();
+      else this.apply();
+
+      this.play();
     }
   }
 
@@ -787,20 +1066,46 @@
     });
   };
 
+  const initToTop = () => {
+    const btn = document.querySelector('[data-to-top]');
+    if (!(btn instanceof HTMLButtonElement)) return;
+
+    const update = rafThrottle(() => {
+      btn.classList.toggle('is-visible', window.scrollY > 700);
+    });
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    });
+  };
+
   onReady(() => {
     document.documentElement.classList.add('js');
 
     setCurrentYear();
+    initToTop();
 
     const toast = new Toast(document.getElementById('toast-root'));
     const confetti = new Confetti(document.getElementById('fxCanvas'));
     confetti.init();
+
+    const spotlight = new Spotlight();
+    spotlight.init();
 
     const navbar = new Navbar();
     navbar.init();
 
     const scrollAnimator = new ScrollAnimator();
     scrollAnimator.init();
+
+    document.querySelectorAll('[data-carousel]').forEach((el) => {
+      const carousel = new Carousel(el, { intervalMs: 6800 });
+      carousel.init();
+    });
 
     const particles = new ParticleSystem(document.getElementById('particleCanvas'));
     particles.init();

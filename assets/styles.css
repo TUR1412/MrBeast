@@ -751,13 +751,6 @@
             position: relative;
         }
 
-        .testimonial-slider {
-            max-width: 900px;
-            margin: 80px auto;
-            text-align: center;
-            position: relative;
-        }
-
         .testimonial {
             background: rgba(20, 20, 20, 0.95);
             backdrop-filter: blur(20px);
@@ -921,12 +914,17 @@
             align-items: center;
             margin-bottom: 30px;
             color: #cccccc;
+            text-decoration: none;
             padding: 20px;
             background: rgba(20, 20, 20, 0.7);
             border-radius: 15px;
             border: 1px solid rgba(212, 175, 55, 0.2);
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+        }
+
+        .contact-item:visited {
+            color: #cccccc;
         }
 
         .contact-item:hover {
@@ -1237,16 +1235,28 @@
             }
         }
 
-        /* 滚动动画保持不变 */
+        /* 滚动入场：默认可见（避免 JS 慢/失效导致内容消失），JS 场景仅做位移动画 */
         .scroll-animate {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease;
+            opacity: 1;
+            transform: none;
         }
 
-        .scroll-animate.active {
+        .js .scroll-animate {
             opacity: 1;
+            transform: translateY(18px);
+            transition: transform 0.8s ease;
+            will-change: transform;
+        }
+
+        .js .scroll-animate.active {
             transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .js .scroll-animate {
+                transform: none;
+                transition: none;
+            }
         }
 
         /* -------------------------
@@ -1310,6 +1320,17 @@
         @media (prefers-reduced-motion: reduce) {
             html {
                 scroll-behavior: auto;
+            }
+        }
+
+        /* 视口外内容跳过渲染（支持则启用，弱设备更省电） */
+        @supports (content-visibility: auto) {
+            .features,
+            .services,
+            .testimonials,
+            .contact {
+                content-visibility: auto;
+                contain-intrinsic-size: 1px 900px;
             }
         }
 
@@ -1582,36 +1603,184 @@
             box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
         }
 
-        /* Contact item 现在是链接 */
-        .contact-item {
-            text-decoration: none;
-        }
-
         /* -------------------------
-           ✅ “默认可见”滚动入场（仅在 JS 场景启用）
+           ✅ Spotlight / Carousel / Top Button
            ------------------------- */
 
-        .scroll-animate {
-            opacity: 1;
-            transform: none;
+        [data-spotlight] {
+            position: relative;
+            isolation: isolate;
         }
 
-        .js .scroll-animate {
+        .spotlight-glow {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            border-radius: inherit;
             opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-            will-change: opacity, transform;
+            transition: opacity 0.25s ease;
+            background:
+                radial-gradient(650px circle at var(--spot-x, 50%) var(--spot-y, 35%),
+                    rgba(255, 215, 0, 0.22),
+                    rgba(212, 175, 55, 0.10) 25%,
+                    transparent 60%);
+            mix-blend-mode: screen;
+            filter: saturate(1.2);
         }
 
-        .js .scroll-animate.active {
+        [data-spotlight]:hover .spotlight-glow,
+        [data-spotlight]:focus-within .spotlight-glow {
             opacity: 1;
-            transform: translateY(0);
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .js .scroll-animate {
-                opacity: 1;
-                transform: none;
+            .spotlight-glow {
                 transition: none;
             }
+        }
+
+        .testimonial-carousel {
+            max-width: 980px;
+            margin: 70px auto 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .carousel-viewport {
+            overflow: hidden;
+            border-radius: 34px;
+            touch-action: pan-y;
+            user-select: none;
+        }
+
+        .carousel-track {
+            display: flex;
+            width: 100%;
+            transform: translate3d(0, 0, 0);
+            transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+            will-change: transform;
+        }
+
+        .carousel-track.is-dragging {
+            transition: none;
+            cursor: grabbing;
+        }
+
+        .carousel-track > .testimonial {
+            flex: 0 0 100%;
+            margin: 0;
+            user-select: text;
+        }
+
+        .carousel-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .carousel-btn {
+            flex: none;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            background: rgba(15, 15, 15, 0.65);
+            color: #ffffff;
+            cursor: pointer;
+            backdrop-filter: blur(14px) saturate(1.6);
+            transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .carousel-btn:hover {
+            border-color: rgba(212, 175, 55, 0.6);
+            background: rgba(20, 20, 20, 0.75);
+            transform: translateY(-1px);
+        }
+
+        .carousel-btn:active {
+            transform: scale(0.97);
+        }
+
+        .carousel-dots {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            background: rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .carousel-dot[aria-current="true"] {
+            background: linear-gradient(45deg, #d4af37, #ffd700, #ff6b35);
+            border-color: rgba(255, 215, 0, 0.85);
+            transform: scale(1.25);
+        }
+
+        @media (max-width: 768px) {
+            .carousel-controls {
+                gap: 10px;
+            }
+
+            .carousel-btn {
+                padding: 10px 12px;
+                border-radius: 12px;
+            }
+        }
+
+        .footer-note {
+            margin-top: 14px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+        .to-top {
+            display: none;
+        }
+
+        .js .to-top {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            left: 18px;
+            bottom: 18px;
+            z-index: 3100;
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            background: rgba(15, 15, 15, 0.6);
+            color: #ffffff;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            backdrop-filter: blur(14px) saturate(1.6);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+            transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .js .to-top.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .js .to-top:hover {
+            border-color: rgba(212, 175, 55, 0.65);
+            transform: translateY(-2px);
+        }
+
+        .js .to-top:active {
+            transform: scale(0.97);
         }

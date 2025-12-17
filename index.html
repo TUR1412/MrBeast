@@ -8,12 +8,23 @@
     <meta name="description" content="MrBeast（野兽先生）中文风格单页：传奇故事、惊人项目与内容帝国，致敬“用娱乐推动善良”的创作精神。">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#0a0a0a">
+    <meta name="format-detection" content="telephone=no">
 
-    <link rel="icon" href="assets/favicon.svg?v=20251217" type="image/svg+xml">
+    <meta property="og:title" content="MrBeast - 野兽先生传奇">
+    <meta property="og:description" content="中文风格单页：传奇故事、惊人项目与内容帝国，致敬“用娱乐推动善良”的创作精神。">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="MrBeast - 野兽先生传奇">
+    <meta name="twitter:description" content="中文风格单页：传奇故事、惊人项目与内容帝国。">
+
+    <link rel="icon" href="assets/favicon.svg?v=20251217-02" type="image/svg+xml">
 
     <script>document.documentElement.classList.add('js');</script>
-    <link rel="stylesheet" href="assets/styles.css?v=20251217">
-    <script src="assets/app.js?v=20251217" defer></script>
+    <link rel="preload" href="assets/styles.css?v=20251217-02" as="style">
+    <link rel="stylesheet" href="assets/styles.css?v=20251217-02">
+    <link rel="preload" href="assets/app.js?v=20251217-02" as="script">
+    <script src="assets/app.js?v=20251217-02" defer></script>
 </head>
 <body>
     <a class="skip-link" href="#main">跳到主要内容</a>
@@ -48,16 +59,16 @@
     <main id="main">
     <!-- 英雄区域 -->
     <section id="home" class="hero">
-        <div class="floating-stats">
-            <div class="stat-card">
+         <div class="floating-stats">
+            <div class="stat-card" data-spotlight>
                 <div class="stat-number">数亿+</div>
                 <div class="stat-label">订阅者</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" data-spotlight>
                 <div class="stat-number">数千万+$</div>
                 <div class="stat-label">慈善捐赠</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" data-spotlight>
                 <div class="stat-number">数百亿+</div>
                 <div class="stat-label">总观看</div>
             </div>
@@ -71,7 +82,7 @@
                 巨额慈善和改变世界的决心，重新定义了什么叫做"内容创作"。每个视频都是几百万美元的投资，
                 每个项目都在推动人类的善良极限。
             </p>
-            <a href="#story" class="cta-button">探索野兽传奇</a>
+            <a href="#story" class="cta-button" aria-label="探索 MrBeast 传奇故事">探索野兽传奇</a>
         </div>
     </section>
 
@@ -85,19 +96,19 @@
                     <p class="section-subtitle scroll-animate">从零到YouTube之王的不可思议旅程</p>
                     
                     <div class="story-grid">
-                        <div class="story-card scroll-animate">
+                        <div class="story-card scroll-animate" data-spotlight>
                             <div class="story-icon">🎬</div>
                             <h3>内容痴狂者</h3>
                             <p>13岁开始拍摄YouTube视频，每天研究算法超过10小时，6年来上传了数千个视频，只为找到那个完美的病毒式传播公式。从几个观看量到现在的亿万粉丝帝国。</p>
                         </div>
                         
-                        <div class="story-card scroll-animate">
+                        <div class="story-card scroll-animate" data-spotlight>
                             <div class="story-icon">💰</div>
                             <h3>金钱重新定义者</h3>
                             <p>将赚来的每一分钱都重新投入到更大的视频制作中。不是为了囤积财富，而是为了创造更震撼的内容，帮助更多人，推动慈善事业的边界。</p>
                         </div>
                         
-                        <div class="story-card scroll-animate">
+                        <div class="story-card scroll-animate" data-spotlight>
                             <div class="story-icon">🌍</div>
                             <h3>世界改变者</h3>
                             <p>通过Team Trees种植2000万棵树，Team Seas清理3000万磅海洋垃圾，建立免费食品银行，资助白内障手术。用娱乐的力量推动真正的社会改变。</p>
@@ -115,37 +126,37 @@
             <p class="section-subtitle scroll-animate">每一个项目都在挑战不可能</p>
             
             <div class="features-grid">
-                <div class="feature-card scroll-animate">
+                <div class="feature-card scroll-animate" data-spotlight>
                     <div class="feature-icon">🏝️</div>
                     <h3>极限挑战</h3>
                     <p>50小时埋在地下、7天困在岛上、24小时在冰中生存，每个挑战都推动人体和心理的极限，为观众带来前所未有的观看体验。</p>
                 </div>
                 
-                <div class="feature-card scroll-animate">
+                <div class="feature-card scroll-animate" data-spotlight>
                     <div class="feature-icon">🎁</div>
                     <h3>疯狂赠礼</h3>
                     <p>随手送出价值100万美元的私人岛屿、10万美元现金、豪华超跑。每个视频都是一场改变他人生活的盛宴，慷慨程度令全世界震惊。</p>
                 </div>
                 
-                <div class="feature-card scroll-animate">
+                <div class="feature-card scroll-animate" data-spotlight>
                     <div class="feature-icon">🍫</div>
                     <h3>Feastables帝国</h3>
                     <p>打造出与Hershey's竞争的巧克力品牌，每块巧克力都承载着改变糖果工业的使命，将健康美味与疯狂营销完美结合。</p>
                 </div>
                 
-                <div class="feature-card scroll-animate">
+                <div class="feature-card scroll-animate" data-spotlight>
                     <div class="feature-icon">🍔</div>
                     <h3>Beast Burger连锁</h3>
                     <p>无实体店面却遍布全球的虚拟餐厅帝国，重新定义快餐业，让粉丝在世界任何角落都能品尝到"野兽"级别的美食体验。</p>
                 </div>
                 
-                <div class="feature-card scroll-animate">
+                <div class="feature-card scroll-animate" data-spotlight>
                     <div class="feature-icon">📊</div>
                     <h3>数据驱动创新</h3>
                     <p>每个视频都基于深度数据分析，从缩略图到标题再到内容节奏，一切都经过科学计算，追求完美的观众体验和病毒传播效果。</p>
                 </div>
                 
-                <div class="feature-card scroll-animate">
+                <div class="feature-card scroll-animate" data-spotlight>
                     <div class="feature-icon">🌟</div>
                     <h3>团队传奇</h3>
                     <p>Chris、Chandler、Karl等成员组成的黄金团队，每个人都有独特人格魅力，共同创造了YouTube史上最具娱乐性的内容组合。</p>
@@ -162,24 +173,24 @@
             
             <div class="services-container">
                 <div class="services-content scroll-animate">
-                    <div class="service-item">
-                        <h4>每月1亿+观看</h4>
-                        <p>主频道订阅者超过2亿，每个视频都能获得数千万观看量，影响力覆盖全球各个年龄层，是当代最具影响力的内容创作者。</p>
+                    <div class="service-item" data-spotlight>
+                        <h4>高频爆款输出</h4>
+                        <p>以超高密度的爆款内容持续占据热门榜单：强节奏、强叙事、强反转，让“看完还想看”成为常态。</p>
                     </div>
                     
-                    <div class="service-item">
+                    <div class="service-item" data-spotlight>
                         <h4>多频道矩阵</h4>
-                        <p>MrBeast Gaming、MrBeast Shorts、Beast Reacts等多个频道组成内容帝国，每个频道都有独特定位，满足不同观众需求。</p>
+                        <p>游戏、短视频、反应类等多赛道协同，形成“主频道引爆—矩阵扩散—社区沉淀”的增长飞轮。</p>
                     </div>
                     
-                    <div class="service-item">
+                    <div class="service-item" data-spotlight>
                         <h4>慈善影响力</h4>
-                        <p>已捐赠超过1000万美元，影响数百万人生活，将娱乐与公益完美结合，证明内容创作者也能成为社会改变的重要力量。</p>
+                        <p>把“娱乐性”与“善意”绑定：通过项目化、可视化的行动，让更多人看见帮助与改变的路径。</p>
                     </div>
                     
-                    <div class="service-item">
+                    <div class="service-item" data-spotlight>
                         <h4>商业创新</h4>
-                        <p>从YouTube广告收入到品牌合作、产品销售、投资项目，建立了完整的商业生态系统，年收入数亿美元全部用于更大的项目。</p>
+                        <p>从内容到产品再到品牌生态，持续把资源投入到更大的创意实验中，形成“内容驱动商业、商业反哺内容”的闭环。</p>
                     </div>
                 </div>
                 
@@ -198,29 +209,39 @@
             <h2 class="section-title scroll-animate">粉丝见证</h2>
             <p class="section-subtitle scroll-animate">来自全球观众的真实感受</p>
             
-            <div class="testimonial-slider">
-                <div class="testimonial scroll-animate">
-                    <p class="testimonial-text">
-                        "MrBeast不只是YouTuber，他是我们这代人的英雄。看到有人能够如此慷慨地帮助他人，同时创造出最有趣的内容，真的重新定义了我对成功的理解。每个视频都让我相信世界还有希望。"
-                    </p>
-                    <div class="testimonial-author">Sarah Chen</div>
-                    <div class="testimonial-role">忠实粉丝 / 18岁大学生</div>
+            <div class="testimonial-carousel scroll-animate" data-carousel aria-roledescription="carousel" aria-label="粉丝见证轮播">
+                <div class="carousel-viewport" data-viewport>
+                    <div class="carousel-track" data-track>
+                        <article class="testimonial" data-spotlight>
+                            <p class="testimonial-text">
+                                "MrBeast不只是YouTuber，他是我们这代人的英雄。看到有人能够如此慷慨地帮助他人，同时创造出最有趣的内容，真的重新定义了我对成功的理解。每个视频都让我相信世界还有希望。"
+                            </p>
+                            <div class="testimonial-author">Sarah Chen</div>
+                            <div class="testimonial-role">忠实粉丝 / 大学生</div>
+                        </article>
+
+                        <article class="testimonial" data-spotlight>
+                            <p class="testimonial-text">
+                                "作为内容创作者，MrBeast让我明白什么叫真正的dedication。他对内容质量的执着，对粉丝的关爱，对慈善的热忱，完全改变了我对这个行业的看法。他不只是在做视频，他在改变世界。"
+                            </p>
+                            <div class="testimonial-author">Tyler Martinez</div>
+                            <div class="testimonial-role">YouTube创作者</div>
+                        </article>
+
+                        <article class="testimonial" data-spotlight>
+                            <p class="testimonial-text">
+                                "Jimmy的慈善项目让我重新看到了这个世界。他证明了网红也能真正改变他人的生活。看到他的成功，我更加相信善良和努力能够创造奇迹。"
+                            </p>
+                            <div class="testimonial-author">Maria Rodriguez</div>
+                            <div class="testimonial-role">项目受益者</div>
+                        </article>
+                    </div>
                 </div>
-                
-                <div class="testimonial scroll-animate">
-                    <p class="testimonial-text">
-                        "作为内容创作者，MrBeast让我明白什么叫真正的dedication。他对内容质量的执着，对粉丝的关爱，对慈善的热忱，完全改变了我对这个行业的看法。他不只是在做视频，他在改变世界。"
-                    </p>
-                    <div class="testimonial-author">Tyler Martinez</div>
-                    <div class="testimonial-role">YouTube创作者 / 25万订阅者</div>
-                </div>
-                
-                <div class="testimonial scroll-animate">
-                    <p class="testimonial-text">
-                        "Jimmy的慈善项目让我获得了免费的白内障手术，重新看到了这个世界。他证明了网红也能真正改变他人的生活。看到他的成功，我更加相信善良和努力能够创造奇迹。"
-                    </p>
-                    <div class="testimonial-author">Maria Rodriguez</div>
-                    <div class="testimonial-role">慈善项目受益者</div>
+
+                <div class="carousel-controls" aria-label="轮播控制">
+                    <button class="carousel-btn" type="button" data-prev aria-label="上一条见证">上一条</button>
+                    <div class="carousel-dots" data-dots aria-label="选择见证"></div>
+                    <button class="carousel-btn" type="button" data-next aria-label="下一条见证">下一条</button>
                 </div>
             </div>
         </div>
@@ -232,8 +253,8 @@
             <h2 class="section-title scroll-animate">关注野兽</h2>
             <p class="section-subtitle scroll-animate">加入全球最疯狂的内容社区</p>
             
-                <div class="contact-container">
-                    <div class="contact-form scroll-animate">
+            <div class="contact-container">
+                <div class="contact-form scroll-animate" data-spotlight>
                     <form id="contactForm" novalidate>
                         <div class="form-group">
                             <label for="name">你的名字</label>
@@ -262,32 +283,32 @@
                 <div class="contact-info scroll-animate">
                     <h3>关注野兽先生</h3>
 
-                    <a class="contact-item" href="https://www.youtube.com/@MrBeast" target="_blank" rel="noopener noreferrer">
+                    <a class="contact-item" href="https://www.youtube.com/@MrBeast" target="_blank" rel="noopener noreferrer" data-spotlight>
                         <span class="icon" aria-hidden="true">📺</span>
                         <span>YouTube：@MrBeast（数亿订阅者）</span>
                     </a>
 
-                    <a class="contact-item" href="https://www.instagram.com/mrbeast/" target="_blank" rel="noopener noreferrer">
+                    <a class="contact-item" href="https://www.instagram.com/mrbeast/" target="_blank" rel="noopener noreferrer" data-spotlight>
                         <span class="icon" aria-hidden="true">📷</span>
                         <span>Instagram：@mrbeast（数千万粉丝）</span>
                     </a>
 
-                    <a class="contact-item" href="https://x.com/MrBeast" target="_blank" rel="noopener noreferrer">
+                    <a class="contact-item" href="https://x.com/MrBeast" target="_blank" rel="noopener noreferrer" data-spotlight>
                         <span class="icon" aria-hidden="true">🐦</span>
                         <span>X（原 Twitter）：@MrBeast（数千万关注）</span>
                     </a>
 
-                    <a class="contact-item" href="https://www.tiktok.com/@mrbeast" target="_blank" rel="noopener noreferrer">
+                    <a class="contact-item" href="https://www.tiktok.com/@mrbeast" target="_blank" rel="noopener noreferrer" data-spotlight>
                         <span class="icon" aria-hidden="true">📱</span>
                         <span>TikTok：@mrbeast（上亿粉丝）</span>
                     </a>
 
-                    <a class="contact-item" href="https://feastables.com/" target="_blank" rel="noopener noreferrer">
+                    <a class="contact-item" href="https://feastables.com/" target="_blank" rel="noopener noreferrer" data-spotlight>
                         <span class="icon" aria-hidden="true">🍫</span>
                         <span>Feastables（官方巧克力）</span>
                     </a>
 
-                    <a class="contact-item" href="https://www.mrbeastburger.com/" target="_blank" rel="noopener noreferrer">
+                    <a class="contact-item" href="https://www.mrbeastburger.com/" target="_blank" rel="noopener noreferrer" data-spotlight>
                         <span class="icon" aria-hidden="true">🍔</span>
                         <span>MrBeast Burger（官方汉堡）</span>
                     </a>
@@ -303,6 +324,7 @@
         <div class="footer-content">
             <div class="footer-logo">MrBeast</div>
             <p class="footer-text">改变世界，一个视频一个善举 | 全球最疯狂的内容创作者</p>
+            <p class="footer-note">提示：本页面为致敬风格作品，文案与数据为非实时展示用途。</p>
             
             <div class="social-links">
                 <a href="https://www.youtube.com/@MrBeast" target="_blank" rel="noopener noreferrer" title="YouTube" aria-label="YouTube（新窗口打开）">📺</a>
@@ -317,6 +339,8 @@
             </p>
         </div>
     </footer>
+
+    <button class="to-top" type="button" data-to-top aria-label="回到顶部">↑</button>
 
     <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
 
