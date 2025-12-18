@@ -1567,6 +1567,21 @@
         }
 
         @media (max-width: 768px) {
+            /* ✅ No-JS 小屏：导航不做 fixed 遮挡（JS 场景仍由菜单接管） */
+            html:not(.js) .navbar {
+                position: sticky;
+            }
+
+            html:not(.js) .nav-container {
+                flex-wrap: wrap;
+                gap: 12px;
+                justify-content: center;
+            }
+
+            html:not(.js) .logo {
+                font-size: 2.1rem;
+            }
+
             /* ✅ 仅在 JS 场景显示汉堡按钮；无 JS 时直接展示链接（可键盘访问） */
             .js .nav-toggle {
                 display: inline-flex;
