@@ -851,8 +851,14 @@
       this.backdrop?.addEventListener('click', () => this.closeMenu());
 
       document.addEventListener('keydown', (e) => {
-        if (e.key !== 'Escape') return;
-        this.closeMenu();
+        if (e.key === 'Escape') {
+          this.closeMenu();
+          return;
+        }
+
+        if (e.key === 'Tab') {
+          this.trapFocus(e);
+        }
       });
 
       this.navList?.addEventListener('click', (e) => {
@@ -968,6 +974,58 @@
         this.navList.setAttribute('inert', '');
       } else {
         this.navList.removeAttribute('inert');
+      }
+    }
+
+    getMenuFocusables() {
+      const focusables = [];
+
+      if (this.toggle instanceof HTMLButtonElement) {
+        focusables.push(this.toggle);
+      }
+
+      this.links.forEach((link) => {
+        if (!(link instanceof HTMLElement)) return;
+        if (link.getAttribute('aria-hidden') === 'true') return;
+        focusables.push(link);
+      });
+
+      return focusables.filter((el) => {
+        if (!(el instanceof HTMLElement)) return false;
+        if (el.hasAttribute('disabled')) return false;
+        return true;
+      });
+    }
+
+    trapFocus(e) {
+      if (!(e instanceof KeyboardEvent)) return;
+      if (!this.isOpen()) return;
+      if (!this.mqMobile.matches) return;
+
+      const focusables = this.getMenuFocusables();
+      if (!focusables.length) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      if (!(active instanceof Element) || !focusables.includes(active)) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus({ preventScroll: true });
+        return;
+      }
+
+      if (e.shiftKey) {
+        if (active === first) {
+          e.preventDefault();
+          last.focus({ preventScroll: true });
+        }
+        return;
+      }
+
+      if (active === last) {
+        e.preventDefault();
+        first.focus({ preventScroll: true });
       }
     }
 
