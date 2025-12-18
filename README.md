@@ -67,6 +67,8 @@ python -m http.server 8080
 http://localhost:8080
 ```
 
+> 端口提示：如果 `8080` 已被占用，请换一个端口（例如 `8081`）。
+
 ---
 
 ## 质量检查
@@ -77,10 +79,16 @@ http://localhost:8080
 node --check assets/app.js
 ```
 
+项目自检（无依赖，推荐在提交前跑一次）：
+
+```bash
+node scripts/validate.js
+```
+
 如果你启用了 GitHub Actions，本仓库内置了最小 CI：
 
 - 工作流：`.github/workflows/ci.yml`
-- 内容：JS 语法检查 + 基础 sanity checks（引用文件存在、禁止 `alert()` / `console.*`）
+- 内容：JS 语法检查 + 项目校验（HTML 结构、缓存穿透版本一致性、A11y/安全基础规则等）
 
 ---
 
