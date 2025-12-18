@@ -673,8 +673,22 @@
       this.nextBtn?.addEventListener('click', () => this.next());
 
       this.root.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') this.prev();
-        if (e.key === 'ArrowRight') this.next();
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          this.prev();
+        }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          this.next();
+        }
+        if (e.key === 'Home') {
+          e.preventDefault();
+          this.go(0);
+        }
+        if (e.key === 'End') {
+          e.preventDefault();
+          this.go(this.slides.length - 1);
+        }
       });
 
       this.root.addEventListener('pointerenter', () => this.pause(), { passive: true });
