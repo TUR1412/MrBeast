@@ -38,9 +38,9 @@
 | 视觉 | 深色极光基底、玻璃拟态卡片、细边框与高光 | 保持“高级质感”，避免死黑/死白的廉价观感 |
 | 交互 | 移动端导航（JS 菜单 + 无 JS 退化）、回到顶部、Toast 友好反馈 | 不出现“点了没反应”的生硬体验 |
 | 动效 | 粒子背景、Spotlight 光晕跟随、轮播拖拽/自动播放、动效模式（自动/关/开） | 沉浸感与可控性并重：既有惊艳动效，也能一键降级/覆盖系统偏好 |
-| 性能 | 粒子连线由 O(n²) 改为网格近邻搜索；`content-visibility` 跳过视口外渲染 | 大屏/弱设备也能更稳，减少电量消耗 |
-| 可访问性 | Skip Link、Focus Ring、ARIA 标签、移动端菜单 inert/aria-hidden、无 JS 退化（导航/轮播） | 键盘/读屏/无 JS 场景都更友好，语义更清晰 |
-| 工程 | 核心 CSS/JS 外链 + 版本号 cache-busting | 修复“改了但浏览器缓存不生效”的幽灵问题 |
+| 性能 | 粒子连线由 O(n²) 改为网格近邻搜索；`content-visibility` 跳过视口外渲染；Save-Data/2G 自动降载；重型动效 idle 初始化 | 大屏/弱设备/弱网也能更稳，减少电量消耗与启动压力 |
+| 可访问性 | Skip Link、Focus Ring、ARIA 标签、移动端菜单 inert/aria-hidden + 焦点陷阱、轮播 `aria-live` 播报、forced-colors 高对比度兜底、无 JS 退化（导航/轮播） | 键盘/读屏/高对比度/无 JS 场景都更友好，语义更清晰 |
+| 工程 | 核心 CSS/JS 外链 + 版本号 cache-busting；无依赖 `scripts/validate.js` + CI；Web Manifest + robots.txt | 修复缓存幽灵，并将“质量标准”固化为可执行规则 |
 
 ---
 
