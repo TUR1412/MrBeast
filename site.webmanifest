@@ -1,0 +1,19 @@
+{
+  "name": "MrBeast - 野兽先生传奇",
+  "short_name": "MrBeast",
+  "description": "一个纯静态、一页式的“玻璃拟态 + 粒子宇宙 + 轮播见证 + Spotlight 光晕”风格页面。",
+  "lang": "zh-CN",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
