@@ -1220,8 +1220,11 @@
                 font-size: 3rem;
             }
             
+            /* ✅ 无 JS 也要可用：小屏导航不强制隐藏，允许自动换行 */
             .nav-links {
-                display: none;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 14px;
             }
             
             .story-grid,
@@ -1337,6 +1340,32 @@
             }
         }
 
+        /* ✅ 手动动效开关（JS 持久化，可覆盖系统偏好） */
+        html[data-motion="reduce"] {
+            scroll-behavior: auto;
+        }
+
+        html[data-motion="reduce"] #particleCanvas {
+            display: none;
+        }
+
+        html[data-motion="reduce"] .cursor-follower {
+            display: none !important;
+        }
+
+        html[data-motion="reduce"] .spotlight-glow {
+            display: none;
+        }
+
+        html[data-motion="reduce"] .js .scroll-animate {
+            transform: none;
+            transition: none;
+        }
+
+        html[data-motion="reduce"] .js .carousel-track {
+            transition: none;
+        }
+
         /* 视口外内容跳过渲染（支持则启用，弱设备更省电） */
         @supports (content-visibility: auto) {
             .features,
@@ -1446,15 +1475,16 @@
         }
 
         @media (max-width: 768px) {
-            .nav-toggle {
+            /* ✅ 仅在 JS 场景显示汉堡按钮；无 JS 时直接展示链接（可键盘访问） */
+            .js .nav-toggle {
                 display: inline-flex;
             }
 
-            body.nav-open {
+            .js body.nav-open {
                 overflow: hidden;
             }
 
-            .nav-links {
+            .js .nav-links {
                 display: flex;
                 flex-direction: column;
                 gap: 8px;
@@ -1480,7 +1510,7 @@
                 transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
             }
 
-            body.nav-open .nav-links {
+            .js body.nav-open .nav-links {
                 opacity: 1;
                 visibility: visible;
                 transform: translateY(0) scale(1);
@@ -1660,14 +1690,33 @@
             text-align: center;
         }
 
+        /* ✅ 无 JS 退化：展示为列表，隐藏无效控制按钮 */
+        .carousel-controls {
+            display: none;
+        }
+
         .carousel-viewport {
-            overflow: hidden;
+            overflow: visible;
             border-radius: 34px;
+        }
+
+        .carousel-track {
+            display: grid;
+            gap: 14px;
+        }
+
+        .carousel-track > .testimonial {
+            margin: 0;
+        }
+
+        /* ✅ JS 场景：启用轮播（拖拽/自动播放/按钮控制） */
+        .js .carousel-viewport {
+            overflow: hidden;
             touch-action: pan-y;
             user-select: none;
         }
 
-        .carousel-track {
+        .js .carousel-track {
             display: flex;
             width: 100%;
             transform: translate3d(0, 0, 0);
@@ -1675,18 +1724,18 @@
             will-change: transform;
         }
 
-        .carousel-track.is-dragging {
+        .js .carousel-track.is-dragging {
             transition: none;
             cursor: grabbing;
         }
 
-        .carousel-track > .testimonial {
+        .js .carousel-track > .testimonial {
             flex: 0 0 100%;
             margin: 0;
             user-select: text;
         }
 
-        .carousel-controls {
+        .js .carousel-controls {
             display: flex;
             align-items: center;
             gap: 14px;
@@ -1797,4 +1846,43 @@
 
         .js .to-top:active {
             transform: scale(0.97);
+        }
+
+        .motion-toggle {
+            display: none;
+        }
+
+        .js .motion-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 3100;
+            height: 46px;
+            padding: 0 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            background: rgba(15, 15, 15, 0.6);
+            color: #ffffff;
+            cursor: pointer;
+            backdrop-filter: blur(14px) saturate(1.6);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .js .motion-toggle:hover {
+            border-color: rgba(212, 175, 55, 0.65);
+            background: rgba(20, 20, 20, 0.72);
+            transform: translateY(-2px);
+        }
+
+        .js .motion-toggle:active {
+            transform: scale(0.97);
+        }
+
+        html[data-motion="reduce"] .js .motion-toggle {
+            border-color: rgba(255, 215, 0, 0.85);
+            background: rgba(10, 10, 10, 0.76);
         }

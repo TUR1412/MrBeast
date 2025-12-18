@@ -46,6 +46,19 @@
   - 轮播不自动播放
   - 滚动入场不做位移动画
 
+### 3.1.1 手动动效模式（覆盖系统偏好）
+
+页面右下角提供 `动效：自动/关/开` 三档开关（持久化），优先级为：
+
+1. **关**：强制减少动效
+2. **开**：强制启用动效
+3. **自动**：跟随系统 `prefers-reduced-motion`
+
+实现要点：
+
+- 偏好写入 `localStorage`：`mrbeast_motion_mode_v1`
+- 在生效为“减少动效”时，`<html>` 会写入 `data-motion="reduce"`，用于 CSS 侧降级/覆盖（例如关闭平滑滚动、隐藏粒子画布等）
+
 ### 3.2 默认可见（避免 JS 救场）
 
 滚动入场动画采用“默认可见 + JS 仅位移”的策略：
@@ -72,9 +85,15 @@
 每次修改核心逻辑/样式后，必须更新 `index.html` 中静态资源版本号：
 
 ```html
-<link rel="stylesheet" href="assets/styles.css?v=20251217-03">
-<script src="assets/app.js?v=20251217-03" defer></script>
+<link rel="stylesheet" href="assets/styles.css?v=20251218-01">
+<script src="assets/app.js?v=20251218-01" defer></script>
 ```
 
 目的：避免浏览器缓存导致“改了但不生效”的幽灵问题。
 
+---
+
+## 6) 无 JS 退化（No-JS Fallback）
+
+- **移动端导航**：无 JS 时不显示汉堡按钮，导航链接直接可见（可键盘访问）
+- **轮播**：无 JS 时退化为列表展示，并隐藏无效控制按钮

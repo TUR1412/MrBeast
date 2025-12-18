@@ -2,11 +2,18 @@
   'use strict';
 
   const STORAGE_KEY = 'mrbeast_contact_draft_v1';
+  const MOTION_MODE_KEY = 'mrbeast_motion_mode_v1';
+
+  let motionMode = 'auto';
 
   const mqReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const mqCoarsePointer = window.matchMedia('(pointer: coarse)');
 
-  const prefersReducedMotion = () => mqReducedMotion.matches;
+  const prefersReducedMotion = () => {
+    if (motionMode === 'reduce') return true;
+    if (motionMode === 'full') return false;
+    return mqReducedMotion.matches;
+  };
   const isCoarsePointer = () => mqCoarsePointer.matches;
 
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -54,6 +61,56 @@
       // ignore
     }
   };
+
+  const normalizeMotionMode = (value) => {
+    if (value === 'auto' || value === 'reduce' || value === 'full') return value;
+    return 'auto';
+  };
+
+  const motionModeLabel = (mode) => {
+    const normalized = normalizeMotionMode(mode);
+    if (normalized === 'reduce') return '动效：关';
+    if (normalized === 'full') return '动效：开';
+    return '动效：自动';
+  };
+
+  const motionModeAriaLabel = (mode) => {
+    const normalized = normalizeMotionMode(mode);
+    if (normalized === 'reduce') return '动效模式：关（减少动效）。点击切换。';
+    if (normalized === 'full') return '动效模式：开（强制开启动效）。点击切换。';
+    return '动效模式：自动（跟随系统设置）。点击切换。';
+  };
+
+  const nextMotionMode = (mode) => {
+    const current = normalizeMotionMode(mode);
+    if (current === 'auto') return 'reduce';
+    if (current === 'reduce') return 'full';
+    return 'auto';
+  };
+
+  const applyMotionAttribute = () => {
+    const root = document.documentElement;
+    if (!(root instanceof HTMLElement)) return;
+
+    if (prefersReducedMotion()) {
+      root.setAttribute('data-motion', 'reduce');
+      return;
+    }
+
+    root.removeAttribute('data-motion');
+  };
+
+  const loadMotionMode = () => {
+    motionMode = normalizeMotionMode(safeStorageGet(MOTION_MODE_KEY));
+  };
+
+  const persistMotionMode = (mode) => {
+    motionMode = normalizeMotionMode(mode);
+    safeStorageSet(MOTION_MODE_KEY, motionMode);
+  };
+
+  loadMotionMode();
+  applyMotionAttribute();
 
   const onReady = (fn) => {
     if (document.readyState === 'loading') {
@@ -222,6 +279,7 @@
     constructor(canvas) {
       this.canvas = canvas;
       this.ctx = canvas ? canvas.getContext('2d') : null;
+      this.initialized = false;
       this.particles = [];
       this.running = false;
       this.pointer = { x: 0, y: 0, active: false };
@@ -245,8 +303,10 @@
 
     init() {
       if (!this.canvas || !this.ctx) return;
+      if (this.initialized) return;
       if (prefersReducedMotion()) return;
 
+      this.initialized = true;
       this.resize(true);
       this.resetParticles();
 
@@ -556,6 +616,7 @@
       };
 
       const onMove = (e) => {
+        if (prefersReducedMotion()) return;
         lastX = e.clientX;
         lastY = e.clientY;
         if (rafId) return;
@@ -568,6 +629,7 @@
       };
 
       const onFocus = () => {
+        if (prefersReducedMotion()) return;
         el.style.setProperty('--spot-x', '50%');
         el.style.setProperty('--spot-y', '35%');
       };
@@ -945,35 +1007,41 @@
       this.y = -999;
       this.scale = 1;
       this.raf = 0;
+      this.initialized = false;
+
+      this._onMove = (e) => {
+        if (prefersReducedMotion() || isCoarsePointer()) return;
+        this.x = e.clientX;
+        this.y = e.clientY;
+        this.schedule();
+      };
+
+      this._onDown = () => {
+        if (prefersReducedMotion() || isCoarsePointer()) return;
+        this.scale = 1.45;
+        this.schedule();
+      };
+
+      this._onUp = () => {
+        if (prefersReducedMotion() || isCoarsePointer()) return;
+        this.scale = 1;
+        this.schedule();
+      };
     }
 
     init() {
+      if (this.initialized) return;
       if (prefersReducedMotion() || isCoarsePointer()) return;
 
       const el = document.createElement('div');
       el.className = 'cursor-follower is-ready';
       document.body.appendChild(el);
       this.el = el;
+      this.initialized = true;
 
-      document.addEventListener(
-        'mousemove',
-        (e) => {
-          this.x = e.clientX;
-          this.y = e.clientY;
-          this.schedule();
-        },
-        { passive: true },
-      );
-
-      document.addEventListener('mousedown', () => {
-        this.scale = 1.45;
-        this.schedule();
-      });
-
-      document.addEventListener('mouseup', () => {
-        this.scale = 1;
-        this.schedule();
-      });
+      document.addEventListener('mousemove', this._onMove, { passive: true });
+      document.addEventListener('mousedown', this._onDown, { passive: true });
+      document.addEventListener('mouseup', this._onUp, { passive: true });
     }
 
     schedule() {
@@ -1145,9 +1213,58 @@
     update();
   };
 
-  onReady(() => {
-    document.documentElement.classList.add('js');
+  const initMotionToggle = ({ toast, particles, carousels, spotlight, mouseFollower }) => {
+    const btn = document.querySelector('[data-motion-toggle]');
+    if (!(btn instanceof HTMLButtonElement)) return;
 
+    const syncButton = () => {
+      btn.textContent = motionModeLabel(motionMode);
+      btn.setAttribute('aria-label', motionModeAriaLabel(motionMode));
+      applyMotionAttribute();
+    };
+
+    const applyRuntime = () => {
+      const reduced = prefersReducedMotion();
+
+      if (reduced) {
+        document.querySelectorAll('.scroll-animate').forEach((el) => el.classList.add('active'));
+        particles?.stop();
+        carousels?.forEach((carousel) => carousel.pause());
+        return;
+      }
+
+      particles?.init();
+      particles?.start();
+      carousels?.forEach((carousel) => carousel.play());
+      spotlight?.init();
+      mouseFollower?.init();
+    };
+
+    syncButton();
+    applyRuntime();
+
+    btn.addEventListener('click', () => {
+      persistMotionMode(nextMotionMode(motionMode));
+      syncButton();
+      applyRuntime();
+
+      toast?.show(`已切换：${motionModeLabel(motionMode)}`, { variant: 'success', timeoutMs: 2200 });
+    });
+
+    const onSystemChange = () => {
+      if (motionMode !== 'auto') return;
+      syncButton();
+      applyRuntime();
+    };
+
+    if (typeof mqReducedMotion.addEventListener === 'function') {
+      mqReducedMotion.addEventListener('change', onSystemChange);
+    } else if (typeof mqReducedMotion.addListener === 'function') {
+      mqReducedMotion.addListener(onSystemChange);
+    }
+  };
+
+  onReady(() => {
     setCurrentYear();
     initToTop();
     initScrollProgress();
@@ -1165,9 +1282,11 @@
     const scrollAnimator = new ScrollAnimator();
     scrollAnimator.init();
 
+    const carousels = [];
     document.querySelectorAll('[data-carousel]').forEach((el) => {
       const carousel = new Carousel(el, { intervalMs: 6800 });
       carousel.init();
+      carousels.push(carousel);
     });
 
     const particles = new ParticleSystem(document.getElementById('particleCanvas'));
@@ -1183,5 +1302,13 @@
       confetti,
     });
     formHandler.init();
+
+    initMotionToggle({
+      toast,
+      particles,
+      carousels,
+      spotlight,
+      mouseFollower,
+    });
   });
 })();

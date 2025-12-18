@@ -23,11 +23,10 @@
 请确认你更新了 `index.html` 里的资源版本号（Cache Busting）：
 
 ```html
-<link rel="stylesheet" href="assets/styles.css?v=20251217-03">
-<script src="assets/app.js?v=20251217-03" defer></script>
+<link rel="stylesheet" href="assets/styles.css?v=20251218-01">
+<script src="assets/app.js?v=20251218-01" defer></script>
 ```
 
 ### 2) 需要自定义域名？
 
 GitHub Pages 支持自定义域名，按 Pages 页面提示配置即可。
-
