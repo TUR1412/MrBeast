@@ -1373,6 +1373,16 @@
       toast?.show(`已切换：${motionModeLabel(motionMode)}`, { variant: 'success', timeoutMs: 2200 });
     });
 
+    document.addEventListener('keydown', (e) => {
+      if (!(e instanceof KeyboardEvent)) return;
+      if (!e.altKey) return;
+      if (e.key !== 'm' && e.key !== 'M') return;
+      const target = e.target;
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
+      e.preventDefault();
+      btn.click();
+    });
+
     const onSystemChange = () => {
       if (motionMode !== 'auto') return;
       syncButton();
