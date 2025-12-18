@@ -1365,6 +1365,14 @@
             html {
                 scroll-behavior: auto;
             }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
         }
 
         /* ✅ 高对比度/强制颜色（Windows High Contrast） */
@@ -1419,6 +1427,14 @@
         /* ✅ 手动动效开关（JS 持久化，可覆盖系统偏好） */
         html[data-motion="reduce"] {
             scroll-behavior: auto;
+        }
+
+        html[data-motion="reduce"] *,
+        html[data-motion="reduce"] *::before,
+        html[data-motion="reduce"] *::after {
+            animation-duration: 0.001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
         }
 
         html[data-motion="reduce"] #particleCanvas {
