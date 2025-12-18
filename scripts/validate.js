@@ -29,15 +29,18 @@ const indexPath = path.join(root, 'index.html');
 const cssPath = path.join(root, 'assets', 'styles.css');
 const jsPath = path.join(root, 'assets', 'app.js');
 const faviconPath = path.join(root, 'assets', 'favicon.svg');
+const manifestPath = path.join(root, 'site.webmanifest');
 
 assert(fs.existsSync(indexPath), 'Missing file: index.html');
 assert(fs.existsSync(cssPath), 'Missing file: assets/styles.css');
 assert(fs.existsSync(jsPath), 'Missing file: assets/app.js');
 assert(fs.existsSync(faviconPath), 'Missing file: assets/favicon.svg');
+assert(fs.existsSync(manifestPath), 'Missing file: site.webmanifest');
 
 const html = readUtf8(indexPath);
 const css = readUtf8(cssPath);
 const js = readUtf8(jsPath);
+const manifestText = readUtf8(manifestPath);
 
 // ---- HTML sanity ----
 assert(/<html\b[^>]*\blang="[^"]+"/i.test(html), 'index.html: missing <html lang="...">');
@@ -72,6 +75,7 @@ assert(/<noscript>/i.test(html), 'index.html: missing <noscript> hint');
     { name: 'styles', pattern: /assets\/styles\.css\?v=([0-9A-Za-z-_.]+)/g },
     { name: 'app', pattern: /assets\/app\.js\?v=([0-9A-Za-z-_.]+)/g },
     { name: 'favicon', pattern: /assets\/favicon\.svg\?v=([0-9A-Za-z-_.]+)/g },
+    { name: 'manifest', pattern: /site\.webmanifest\?v=([0-9A-Za-z-_.]+)/g },
   ];
 
   const versions = new Map();
@@ -97,6 +101,22 @@ assert(!/\bdebugger\b/.test(js), 'assets/app.js: do not leave debugger statement
 assert(css.includes('.skip-link'), 'assets/styles.css: missing .skip-link styles');
 assert(css.includes('.toast-root'), 'assets/styles.css: missing Toast styles (.toast-root)');
 assert(!/\bopacity\s*:\s*0\b/.test(css) || css.includes('默认可见'), 'assets/styles.css: avoid hard-coded opacity:0 for core content (ensure default-visible strategy)');
+
+// ---- Manifest sanity ----
+{
+  let manifest;
+  try {
+    manifest = JSON.parse(manifestText);
+  } catch {
+    fail('site.webmanifest: invalid JSON');
+    manifest = null;
+  }
+
+  if (manifest) {
+    assert(typeof manifest.name === 'string' && manifest.name.trim(), 'site.webmanifest: missing name');
+    assert(Array.isArray(manifest.icons) && manifest.icons.length > 0, 'site.webmanifest: missing icons');
+  }
+}
 
 if (process.exitCode) {
   process.stderr.write('\n❌ Validation failed.\n');
