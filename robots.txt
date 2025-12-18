@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# 本项目为纯静态单页，可直接部署到 GitHub Pages。
+# 如需添加 sitemap，请根据实际域名补充：
+# Sitemap: https://example.com/sitemap.xml
