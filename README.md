@@ -136,6 +136,8 @@ node scripts/validate.js
 
 该偏好会持久化到 `localStorage`，刷新后仍会生效。
 
+快捷键：`Alt + M`（在未聚焦输入框时可用）。
+
 ---
 
 ## 无 JS 退化策略
