@@ -645,6 +645,7 @@
       this.root = root;
       this.viewport = root?.querySelector('[data-viewport]') || null;
       this.track = root?.querySelector('[data-track]') || null;
+      this.status = root?.querySelector('[data-carousel-status]') || null;
       this.dotsRoot = root?.querySelector('[data-dots]') || null;
       this.prevBtn = root?.querySelector('[data-prev]') || null;
       this.nextBtn = root?.querySelector('[data-next]') || null;
@@ -691,11 +692,13 @@
       this.dotsRoot.innerHTML = '';
       this.dots = [];
 
+      const controlsId = this.viewport instanceof HTMLElement ? this.viewport.id : '';
       for (let i = 0; i < this.slides.length; i++) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'carousel-dot';
         btn.setAttribute('aria-label', `第 ${i + 1} 条见证`);
+        if (controlsId) btn.setAttribute('aria-controls', controlsId);
         btn.addEventListener('click', () => this.go(i));
         this.dotsRoot.appendChild(btn);
         this.dots.push(btn);
@@ -729,7 +732,20 @@
         dot.setAttribute('aria-current', i === this.index ? 'true' : 'false');
       });
 
+      this.updateStatus();
+
       if (initial) return;
+    }
+
+    updateStatus() {
+      if (!(this.status instanceof HTMLElement)) return;
+      if (!this.slides.length) return;
+
+      const total = this.slides.length;
+      const slide = this.slides[this.index];
+      const author = slide?.querySelector('.testimonial-author')?.textContent?.trim() || '';
+      const suffix = author ? `：${author}` : '';
+      this.status.textContent = `已显示第 ${this.index + 1} 条，共 ${total} 条${suffix}。`;
     }
 
     go(i) {

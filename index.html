@@ -215,8 +215,9 @@
             <h2 class="section-title scroll-animate">粉丝见证</h2>
             <p class="section-subtitle scroll-animate">来自全球观众的真实感受</p>
             
-            <div class="testimonial-carousel scroll-animate" data-carousel aria-roledescription="carousel" aria-label="粉丝见证轮播">
-                <div class="carousel-viewport" data-viewport>
+            <div class="testimonial-carousel scroll-animate" id="testimonials-carousel" data-carousel aria-roledescription="carousel" aria-label="粉丝见证轮播" aria-describedby="testimonials-carousel-status">
+                <p id="testimonials-carousel-status" class="sr-only" data-carousel-status aria-live="polite" aria-atomic="true"></p>
+                <div class="carousel-viewport" data-viewport id="testimonials-carousel-viewport">
                     <div class="carousel-track" data-track>
                         <article class="testimonial" data-spotlight>
                             <p class="testimonial-text">
@@ -245,9 +246,9 @@
                 </div>
 
                 <div class="carousel-controls" aria-label="轮播控制">
-                    <button class="carousel-btn" type="button" data-prev aria-label="上一条见证">上一条</button>
-                    <div class="carousel-dots" data-dots aria-label="选择见证"></div>
-                    <button class="carousel-btn" type="button" data-next aria-label="下一条见证">下一条</button>
+                    <button class="carousel-btn" type="button" data-prev aria-controls="testimonials-carousel-viewport" aria-label="上一条见证">上一条</button>
+                    <div class="carousel-dots" data-dots aria-controls="testimonials-carousel-viewport" aria-label="选择见证"></div>
+                    <button class="carousel-btn" type="button" data-next aria-controls="testimonials-carousel-viewport" aria-label="下一条见证">下一条</button>
                 </div>
             </div>
         </div>
