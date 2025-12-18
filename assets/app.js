@@ -1213,7 +1213,46 @@
       this.restoreDraft();
 
       this.form.addEventListener('input', this._saveDraft, { passive: true });
+      this.form.addEventListener('input', (e) => this.onInput(e), { passive: true });
       this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    }
+
+    setInvalid(field, isInvalid) {
+      if (!(field instanceof HTMLElement)) return;
+      if (isInvalid) {
+        field.setAttribute('aria-invalid', 'true');
+        return;
+      }
+      field.removeAttribute('aria-invalid');
+    }
+
+    resetInvalidState() {
+      Object.values(this.fields).forEach((field) => this.setInvalid(field, false));
+    }
+
+    onInput(e) {
+      const target = e.target;
+      if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
+
+      if (target.id === 'name') {
+        this.setInvalid(target, !target.value.trim());
+        return;
+      }
+
+      if (target.id === 'email') {
+        const value = target.value.trim();
+        this.setInvalid(target, !value || !target.checkValidity());
+        return;
+      }
+
+      if (target.id === 'phone') {
+        this.setInvalid(target, false);
+        return;
+      }
+
+      if (target.id === 'message') {
+        this.setInvalid(target, false);
+      }
     }
 
     readDraft() {
@@ -1268,23 +1307,27 @@
       e.preventDefault();
       if (!this.form) return;
 
+      this.resetInvalidState();
       const name = (this.fields.name?.value || '').trim();
       const email = (this.fields.email?.value || '').trim();
 
       if (!name) {
         this.toast?.show('请填写你的名字。', { variant: 'error' });
+        this.setInvalid(this.fields.name, true);
         this.fields.name?.focus();
         return;
       }
 
       if (!email) {
         this.toast?.show('请填写邮箱地址。', { variant: 'error' });
+        this.setInvalid(this.fields.email, true);
         this.fields.email?.focus();
         return;
       }
 
       if (this.fields.email && !this.fields.email.checkValidity()) {
         this.toast?.show('邮箱格式看起来不太对，请检查一下。', { variant: 'error' });
+        this.setInvalid(this.fields.email, true);
         this.fields.email.focus();
         return;
       }
