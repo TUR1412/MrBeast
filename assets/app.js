@@ -37,6 +37,17 @@
     };
   };
 
+  const runWhenIdle = (fn, { timeoutMs = 1200 } = {}) => {
+    if (typeof fn !== 'function') return;
+
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(() => fn(), { timeout: timeoutMs });
+      return;
+    }
+
+    window.setTimeout(fn, 0);
+  };
+
   const safeJsonParse = (text) => {
     try {
       return JSON.parse(text);
@@ -1363,7 +1374,7 @@
     };
 
     syncButton();
-    applyRuntime();
+    runWhenIdle(() => applyRuntime(), { timeoutMs: 900 });
 
     btn.addEventListener('click', () => {
       persistMotionMode(nextMotionMode(motionMode));
@@ -1406,7 +1417,6 @@
     confetti.init();
 
     const spotlight = new Spotlight();
-    spotlight.init();
 
     const navbar = new Navbar();
     navbar.init();
@@ -1422,11 +1432,8 @@
     });
 
     const particles = new ParticleSystem(document.getElementById('particleCanvas'));
-    particles.init();
-    particles.start();
 
     const mouseFollower = new MouseFollower();
-    mouseFollower.init();
 
     const formHandler = new FormHandler({
       form: document.getElementById('contactForm'),
