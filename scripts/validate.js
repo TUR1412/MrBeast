@@ -30,12 +30,14 @@ const cssPath = path.join(root, 'assets', 'styles.css');
 const jsPath = path.join(root, 'assets', 'app.js');
 const faviconPath = path.join(root, 'assets', 'favicon.svg');
 const manifestPath = path.join(root, 'site.webmanifest');
+const robotsPath = path.join(root, 'robots.txt');
 
 assert(fs.existsSync(indexPath), 'Missing file: index.html');
 assert(fs.existsSync(cssPath), 'Missing file: assets/styles.css');
 assert(fs.existsSync(jsPath), 'Missing file: assets/app.js');
 assert(fs.existsSync(faviconPath), 'Missing file: assets/favicon.svg');
 assert(fs.existsSync(manifestPath), 'Missing file: site.webmanifest');
+assert(fs.existsSync(robotsPath), 'Missing file: robots.txt');
 
 const html = readUtf8(indexPath);
 const css = readUtf8(cssPath);
