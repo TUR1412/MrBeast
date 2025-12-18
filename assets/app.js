@@ -837,6 +837,7 @@
       this.mqMobile = window.matchMedia('(max-width: 768px)');
 
       this._onScroll = rafThrottle(() => this.handleScroll());
+      this._onResize = rafThrottle(() => this.handleResize());
       this.sectionObserver = null;
       this.backdropHideTimer = 0;
     }
@@ -844,6 +845,7 @@
     init() {
       this.handleScroll();
       window.addEventListener('scroll', this._onScroll, { passive: true });
+      window.addEventListener('resize', this._onResize, { passive: true });
 
       this.toggle?.addEventListener('click', () => this.toggleMenu());
       this.backdrop?.addEventListener('click', () => this.closeMenu());
@@ -878,14 +880,34 @@
       this.navbar.classList.toggle('is-scrolled', scrolled);
     }
 
+    handleResize() {
+      this.handleScroll();
+      this.updateScrollbarCompensation();
+    }
+
     isOpen() {
       return document.body.classList.contains('nav-open');
+    }
+
+    updateScrollbarCompensation() {
+      const root = document.documentElement;
+      if (!(root instanceof HTMLElement)) return;
+
+      if (!this.isOpen()) {
+        root.style.removeProperty('--scrollbar-compensation');
+        return;
+      }
+
+      const width = window.innerWidth - root.clientWidth;
+      const px = clamp(width, 0, 40);
+      root.style.setProperty('--scrollbar-compensation', `${px}px`);
     }
 
     openMenu() {
       if (this.isOpen()) return;
       document.body.classList.add('nav-open');
       if (this.toggle) this.toggle.setAttribute('aria-expanded', 'true');
+      this.updateScrollbarCompensation();
 
       if (this.backdrop) {
         window.clearTimeout(this.backdropHideTimer);
@@ -903,6 +925,7 @@
       if (!this.isOpen()) return;
       document.body.classList.remove('nav-open');
       if (this.toggle) this.toggle.setAttribute('aria-expanded', 'false');
+      this.updateScrollbarCompensation();
 
       if (this.backdrop) {
         window.clearTimeout(this.backdropHideTimer);
