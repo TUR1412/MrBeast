@@ -27,6 +27,19 @@
 <script src="assets/app.js?v=20251218-01" defer></script>
 ```
 
+并建议同时确认：
+
+- `site.webmanifest` 已正常提交（用于“安装到桌面/分享卡片”等）
+- `robots.txt` 已存在（站点交付更完整）
+
 ### 2) 需要自定义域名？
 
 GitHub Pages 支持自定义域名，按 Pages 页面提示配置即可。
+
+---
+
+## 上线清单（推荐）
+
+- [ ] `index.html` 的 `?v=...` 已同步更新（CSS/JS/favicon/manifest 版本一致）
+- [ ] `node scripts/validate.js` 本地自检通过（无依赖）
+- [ ] GitHub Actions CI 通过（`.github/workflows/ci.yml`）
