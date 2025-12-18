@@ -108,8 +108,8 @@
 每次修改核心逻辑/样式后，必须更新 `index.html` 中静态资源版本号：
 
 ```html
-<link rel="stylesheet" href="assets/styles.css?v=20251218-01">
-<script src="assets/app.js?v=20251218-01" defer></script>
+<link rel="stylesheet" href="assets/styles.css?v=20251218-02">
+<script src="assets/app.js?v=20251218-02" defer></script>
 ```
 
 目的：避免浏览器缓存导致“改了但不生效”的幽灵问题。
