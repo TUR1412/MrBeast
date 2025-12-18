@@ -23,36 +23,6 @@ jobs:
       - name: JavaScript syntax check
         run: node --check assets/app.js
 
-      - name: Sanity checks
-        shell: bash
-        run: |
-          node - <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-
-          const html = fs.readFileSync('index.html', 'utf8');
-          const required = ['assets/styles.css', 'assets/app.js', 'assets/favicon.svg'];
-          for (const rel of required) {
-            if (!html.includes(rel)) {
-              console.error('Missing reference in index.html:', rel);
-              process.exit(1);
-            }
-            if (!fs.existsSync(path.join(process.cwd(), rel))) {
-              console.error('Missing file on disk:', rel);
-              process.exit(1);
-            }
-          }
-
-          const js = fs.readFileSync('assets/app.js', 'utf8');
-          if (/\balert\(/.test(js)) {
-            console.error('Do not use alert() in production UI.');
-            process.exit(1);
-          }
-          if (/\bconsole\./.test(js)) {
-            console.error('Do not leave console.* in production UI.');
-            process.exit(1);
-          }
-
-          console.log('OK');
-          NODE
+      - name: Project validation
+        run: node scripts/validate.js
 
