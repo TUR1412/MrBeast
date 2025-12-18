@@ -925,6 +925,19 @@
             transform: scale(1.02);
         }
 
+        .form-group input[aria-invalid="true"],
+        .form-group textarea[aria-invalid="true"] {
+            border-color: rgba(255, 107, 53, 0.85);
+            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.14);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .form-group input:focus,
+            .form-group textarea:focus {
+                transform: none;
+            }
+        }
+
         .contact-info {
             position: relative;
         }
