@@ -108,6 +108,7 @@ node scripts/validate.js
 
 - `docs/QUALITY.md`：原子级审查标准（交互 / A11y / 性能 / 缓存穿透）
 - `docs/DEPLOY.md`：GitHub Pages 部署指南
+- `docs/ARCHITECTURE.md`：架构与模块说明（Quark-Level）
 
 ---
 
