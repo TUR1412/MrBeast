@@ -1341,6 +1341,51 @@
             }
         }
 
+        /* ✅ 高对比度/强制颜色（Windows High Contrast） */
+        @media (forced-colors: active) {
+            .logo {
+                background: none;
+                -webkit-text-fill-color: ButtonText;
+                color: ButtonText;
+                text-shadow: none;
+            }
+
+            .logo::before {
+                display: none;
+            }
+
+            a:focus-visible,
+            button:focus-visible,
+            input:focus-visible,
+            textarea:focus-visible {
+                outline: 2px solid Highlight;
+                outline-offset: 3px;
+            }
+
+            .spotlight-glow,
+            #particleCanvas,
+            #fxCanvas,
+            .cursor-follower {
+                display: none !important;
+            }
+
+            .navbar {
+                background: Canvas;
+                border-bottom: 1px solid CanvasText;
+                box-shadow: none;
+            }
+
+            .nav-links a,
+            .nav-toggle,
+            .carousel-btn,
+            .motion-toggle,
+            .to-top {
+                background: Canvas;
+                border: 1px solid CanvasText;
+                color: CanvasText;
+            }
+        }
+
         /* ✅ 手动动效开关（JS 持久化，可覆盖系统偏好） */
         html[data-motion="reduce"] {
             scroll-behavior: auto;
