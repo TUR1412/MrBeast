@@ -1093,10 +1093,8 @@
     }
 
     applyActiveFromHash() {
-      if (!location.hash) return;
-      const id = location.hash.replace('#', '').trim();
-      if (!id) return;
-      this.setActiveLink(id);
+      const raw = location.hash ? location.hash.replace('#', '').trim() : '';
+      this.setActiveLink(raw || 'home');
     }
 
     initActiveSection() {
