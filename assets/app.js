@@ -16,6 +16,14 @@
   };
   const isCoarsePointer = () => mqCoarsePointer.matches;
 
+  const prefersReducedData = () => {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!conn) return false;
+    if (conn.saveData) return true;
+    const effectiveType = typeof conn.effectiveType === 'string' ? conn.effectiveType : '';
+    return effectiveType === '2g' || effectiveType === 'slow-2g';
+  };
+
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
   const rafThrottle = (fn) => {
@@ -324,6 +332,7 @@
       let count = Math.floor(area / 11000);
       count = clamp(count, 50, 160);
       if (isCoarsePointer()) count = Math.min(count, 90);
+      if (prefersReducedData()) count = Math.min(count, 70);
       return count;
     }
 
@@ -341,6 +350,8 @@
       this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
       this.connectionDistance = clamp(Math.floor(this.width / 12), 80, 115);
+      this.pointerDistance = prefersReducedData() ? 120 : 150;
+      if (prefersReducedData()) this.connectionDistance = Math.min(this.connectionDistance, 90);
 
       if (!recalculate) return;
       const targetCount = this.computeParticleCount();
