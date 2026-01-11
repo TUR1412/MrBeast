@@ -1,175 +1,135 @@
-# MrBeast - 野兽先生传奇（致敬风格单页）
+# MrBeast - 野兽先生传奇 / MrBeast Tribute (Single Page)
 
-<div align="center">
-  <img src="./assets/readme-cover.svg" alt="MrBeast - 野兽先生传奇" width="100%" />
+[中文](#中文) | [English](#english)
 
-  <p>
-    一个纯静态、一页式的“玻璃拟态 + 粒子宇宙 + 轮播见证 + Spotlight 光晕”风格页面。
-  </p>
+一个致敬 MrBeast（野兽先生）的中文风格单页站点：讲述传奇起源、惊人项目与内容帝国，并以“用娱乐推动善良”的精神为核心。
 
-  <p>
-    <img alt="HTML" src="https://img.shields.io/badge/HTML-5-E34F26?logo=html5&logoColor=white" />
-    <img alt="CSS" src="https://img.shields.io/badge/CSS-3-1572B6?logo=css3&logoColor=white" />
-    <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?logo=javascript&logoColor=000000" />
-    <img alt="Status" src="https://img.shields.io/badge/Status-Ready-success" />
-  </p>
-</div>
+----
 
----
+## 中文
 
-## 目录
+### 项目定位
 
-- [亮点](#亮点)
-- [快速开始](#快速开始)
-- [质量检查](#质量检查)
-- [目录结构](#目录结构)
-- [原子级审查要点](#原子级审查要点)
-- [动效模式](#动效模式)
-- [无-JS-退化策略](#无-js-退化策略)
-- [定制与二次开发](#定制与二次开发)
-- [免责声明](#免责声明)
+- **类型**：纯静态单页（HTML/CSS/JS），无构建即可部署
+- **目标**：高质量视觉与交互 + 可访问性 + 性能与稳定性
+- **运行环境**：任何静态托管（GitHub Pages / Nginx / Cloudflare Pages 等）
 
----
+### 关键能力（增量式增强）
 
-## 亮点
+在不破坏现有业务逻辑与交互模块的前提下，本仓库补齐了常见“行业标准缺口”：
 
-| 维度 | 做了什么 | 为什么这样做 |
-| --- | --- | --- |
-| 视觉 | 深色极光基底、玻璃拟态卡片、细边框与高光 | 保持“高级质感”，避免死黑/死白的廉价观感 |
-| 交互 | 移动端导航（JS 菜单 + 无 JS 退化）、回到顶部、Toast 友好反馈 | 不出现“点了没反应”的生硬体验 |
-| 动效 | 粒子背景、Spotlight 光晕跟随、轮播拖拽/自动播放、动效模式（自动/关/开） | 沉浸感与可控性并重：既有惊艳动效，也能一键降级/覆盖系统偏好 |
-| 性能 | 粒子连线由 O(n²) 改为网格近邻搜索；`content-visibility` 跳过视口外渲染；Save-Data/2G 自动降载；重型动效 idle 初始化 | 大屏/弱设备/弱网也能更稳，减少电量消耗与启动压力 |
-| 可访问性 | Skip Link、Focus Ring、ARIA 标签、移动端菜单 inert/aria-hidden + 焦点陷阱、轮播 `aria-live` 播报、forced-colors 高对比度兜底、无 JS 退化（导航/轮播） | 键盘/读屏/高对比度/无 JS 场景都更友好，语义更清晰 |
-| 工程 | 核心 CSS/JS 外链 + 版本号 cache-busting；无依赖 `scripts/validate.js` + CI；Web Manifest + robots.txt | 修复缓存幽灵，并将“质量标准”固化为可执行规则 |
+- **全局错误边界**：捕获 `error` / `unhandledrejection`，并提供可复制的错误覆盖层（避免静默白屏）
+- **日志与监控骨架**：结构化日志 + 事件队列（可选上报）
+- **性能埋点**：采集关键 Web Vitals（TTFB/FCP/LCP/CLS）并可选上报
+- **单元测试**：使用 Node 原生 `node:test`，为新增模块提供最小可信保障
+- **PWA/缓存策略**：Service Worker 预缓存核心静态资源，离线可用并减少二次加载成本
+- **原子设计分层（CSS @layer）**：引入 `assets/ui.css` 作为设计系统层，对齐现代 UI 质感与交互标准
 
----
+### 目录结构
 
-## 快速开始
+- `index.html`：页面入口
+- `assets/styles.css`：原有样式（legacy）
+- `assets/app.js`：原有交互与动效逻辑（legacy）
+- `assets/ui.css`：新增 UI 设计系统层（tokens/base/atoms/molecules/organisms/utilities）
+- `assets/ha/*`：新增运行时可观测性模块（错误边界/日志/Telemetry/Web Vitals）
+- `sw.js`：Service Worker（缓存与离线）
+- `tests/*`：Node 单元测试
+- `scripts/validate.js`：仓库自检脚本
+- `docs/*`：架构、质量、部署文档
 
-### 方式 A：直接打开（零依赖）
+### 本地运行
 
-1. 克隆仓库
-2. 直接打开 `index.html`
+此项目无需构建：
 
-> 说明：本项目不依赖后端接口，不需要构建流程；双击打开即可浏览。
+1) 直接双击打开 `index.html`（最简单）
+2) 或用任意静态服务器启动（推荐，体验更接近线上）
 
-### 方式 B：本地静态服务（更推荐）
+### 质量与自检
 
-某些浏览器在 `file://` 场景可能对缓存/导航行为表现不一致，建议用本地静态服务打开：
+- 运行自检：`npm run validate` 或 `node scripts/validate.js`
+- 运行测试：`npm test` 或 `node --test`
 
-```bash
-python -m http.server 8080
-```
+CI（GitHub Actions）会执行：
+- `node --check assets/app.js`
+- `node scripts/validate.js`
+- `node --test`
 
-然后访问：
+### 可观测性配置（HA Runtime）
 
-```text
-http://localhost:8080
-```
+默认行为：仅在控制台输出结构化日志；Telemetry **默认不发送到任何服务器**。
 
-> 端口提示：如果 `8080` 已被占用，请换一个端口（例如 `8081`）。
+- **启用 Telemetry 上报**：在 `index.html` 的 `<head>` 中添加/修改：
+  - `<meta name="ha:telemetry:endpoint" content="https://your-endpoint.example/ingest" />`
+- **调整日志级别**：浏览器控制台执行：
+  - `localStorage.setItem("ha:logLevel", "debug")`（可选：`info`/`warn`/`error`/`silent`）
+- **禁用 Service Worker**（排查缓存问题时有用）：
+  - `<meta name="ha:sw:disabled" content="1" />`
 
----
+### 部署（GitHub Pages）
 
-## 质量检查
+参考 `docs/DEPLOY.md`。
 
-仅使用 Node.js 自带语法检查（无依赖）：
+额外说明：
+- 本项目存在 `?v=...` 的缓存穿透策略；新增模块也使用版本号。
+- Service Worker 采用独立缓存名（见 `sw.js`），如需强制刷新缓存，发布时建议同步更新其 `CACHE_NAME`。
 
-```bash
-node --check assets/app.js
-```
+----
 
-项目自检（无依赖，推荐在提交前跑一次）：
+## English
 
-```bash
-node scripts/validate.js
-```
+### What is this?
 
-如果你启用了 GitHub Actions，本仓库内置了最小 CI：
+- **Type**: A static single-page website (HTML/CSS/JS) with zero build steps
+- **Goal**: Modern UI/UX, accessibility, performance, and runtime stability
+- **Hosting**: Any static hosting (GitHub Pages / Nginx / Cloudflare Pages, etc.)
 
-- 工作流：`.github/workflows/ci.yml`
-- 内容：JS 语法检查 + 项目校验（HTML 结构、缓存穿透版本一致性、A11y/安全基础规则等）
+### What’s added (incremental, Open/Closed-friendly)
 
----
+Without breaking the existing interaction logic, the repo now includes:
 
-## 目录结构
+- **Global error boundary**: captures `error` / `unhandledrejection` and shows a copyable overlay
+- **Logging & monitoring skeleton**: structured logger + telemetry queue (opt-in reporting)
+- **Performance instrumentation**: Web Vitals (TTFB/FCP/LCP/CLS) capture (opt-in reporting)
+- **Unit tests**: minimal tests powered by Node’s built-in `node:test`
+- **PWA caching**: Service Worker precaches core assets for offline support and faster reloads
+- **Atomic design CSS layering**: `assets/ui.css` (tokens/base/atoms/molecules/organisms/utilities) for a modern UI baseline
 
-```text
-.
-├─ index.html
-└─ assets/
-   ├─ app.js
-   ├─ styles.css
-   ├─ favicon.svg
-   └─ readme-cover.svg
-```
+### Structure
 
-更多文档：
+- `index.html`: entry
+- `assets/styles.css`: legacy styles
+- `assets/app.js`: legacy interactions
+- `assets/ui.css`: new design system layer
+- `assets/ha/*`: runtime observability modules
+- `sw.js`: Service Worker
+- `tests/*`: unit tests
+- `scripts/validate.js`: repo validation
+- `docs/*`: architecture/quality/deploy docs
 
-- `docs/QUALITY.md`：原子级审查标准（交互 / A11y / 性能 / 缓存穿透）
-- `docs/DEPLOY.md`：GitHub Pages 部署指南
-- `docs/ARCHITECTURE.md`：架构与模块说明（Quark-Level）
+### Local usage
 
----
+No build step required:
 
-## 原子级审查要点
+- Open `index.html` directly, or
+- Serve it via any static server for a more realistic experience.
 
-以下是本项目在交付层面坚持的“原子级”自检原则（方便你二次改造时保持一致）：
+### Quality & checks
 
-1. **默认可见**：首屏核心内容不依赖 JS 才可见（避免 `opacity: 0` 等“等待 JS 救场”的风险）。
-2. **Reduced Motion**：侦测 `prefers-reduced-motion`，自动降级/关闭高强度动效。
-3. **移动端导航无幽灵焦点**：菜单关闭时对导航列表启用 `inert` + `aria-hidden`（仅移动端），避免读屏/键盘“焦点穿模”。
-4. **缓存穿透**：每次修改核心逻辑或关键样式后，更新 `index.html` 里资源版本号 `?v=...`，确保强制刷新生效。
-5. **不在页面主区域裸露错误**：交互反馈使用 Toast/提示文案，避免把原始日志或错误堆栈直接渲染到 UI。
-6. **无 JS 退化**：移动端导航链接仍可访问；轮播退化为列表并隐藏无效控制按钮。
-7. **手动动效模式**：提供“自动/关/开”三档开关，允许覆盖系统 `prefers-reduced-motion` 偏好。
+- Validate: `npm run validate` / `node scripts/validate.js`
+- Test: `npm test` / `node --test`
 
----
+### Observability configuration (HA Runtime)
 
-## 动效模式
+Telemetry is **disabled by default** (no data is sent anywhere).
 
-页面右下角提供 `动效：自动/关/开` 三档开关：
+- Enable reporting via:
+  - `<meta name="ha:telemetry:endpoint" content="https://your-endpoint.example/ingest" />`
+- Set log level via:
+  - `localStorage.setItem("ha:logLevel", "debug")`
+- Disable Service Worker via:
+  - `<meta name="ha:sw:disabled" content="1" />`
 
-- **自动**：跟随系统设置（`prefers-reduced-motion`）
-- **关**：强制减少动效（隐藏粒子/光晕/光标跟随，轮播停止自动播放，滚动入场不做位移）
-- **开**：强制启用动效（即使系统设置为“减少动态效果”）
+### Deployment
 
-该偏好会持久化到 `localStorage`，刷新后仍会生效。
+See `docs/DEPLOY.md`.
 
-快捷键：`Alt + M`（在未聚焦输入框时可用）。
-
----
-
-## 无 JS 退化策略
-
-本项目默认追求“JS 增强”而非“JS 依赖”，因此提供了可用的 No-JS 退化：
-
-- **移动端导航**：无 JS 时不显示汉堡按钮，导航链接直接可见/可键盘操作
-- **粉丝见证轮播**：无 JS 时退化为列表，隐藏无效控制按钮
-
-> 注：无 JS 场景下，表单不会触发 Toast/草稿保存等交互增强（页面底部有 NoScript 提示）。
-
----
-
-## 定制与二次开发
-
-### 修改配色/动效强度
-
-- 主样式：`assets/styles.css`
-- 交互逻辑：`assets/app.js`
-
-### 修改后“强制刷新”生效
-
-打开 `index.html`，更新资源版本号（例：`v=20251218-02`）：
-
-```html
-<link rel="stylesheet" href="assets/styles.css?v=20251218-02">
-<script src="assets/app.js?v=20251218-02" defer></script>
-```
-
----
-
-## 免责声明
-
-- 本项目为致敬风格的静态页面作品，**非官方**，与 MrBeast 团队无任何隶属或合作关系。
-- 文案/数据为展示用途，非实时准确数据源。

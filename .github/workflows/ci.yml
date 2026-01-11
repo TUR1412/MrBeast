@@ -26,3 +26,6 @@ jobs:
       - name: Project validation
         run: node scripts/validate.js
 
+
+
+      - run: node --test

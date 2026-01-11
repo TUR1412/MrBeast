@@ -1,0 +1,11 @@
+{
+  "name": "mrbeast-site",
+  "private": true,
+  "version": "2026.01.11-1",
+  "description": "MrBeast themed static website with lightweight runtime observability and quality checks.",
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "test": "node --test"
+  }
+}
+

@@ -120,3 +120,34 @@
 
 - **移动端导航**：无 JS 时不显示汉堡按钮，导航链接直接可见（可键盘访问）
 - **轮播**：无 JS 时退化为列表展示，并隐藏无效控制按钮
+
+
+## 7) 可观测性与测试（Observability & Tests）
+
+### 7.1 全局错误边界（Error Boundary）
+
+- 捕获未处理的运行时错误与 Promise 拒绝：`window error`/`unhandledrejection`
+- 目标：避免静默白屏，提供可复制错误信息与快速刷新入口
+- 实现：`assets/ha/error-boundary.mjs` + `assets/ha/ha.css`
+
+### 7.2 Telemetry（默认关闭，按需启用）
+
+- 默认不向任何服务端发送数据
+- 通过 meta 启用：`meta[name="ha:telemetry:endpoint"]`
+- 建议：上报前明确隐私策略与采集范围（避免 PII）
+
+### 7.3 Web Vitals（性能埋点）
+
+- 采集：TTFB/FCP/LCP/CLS
+- 目的：用数据而非感觉优化性能
+
+### 7.4 Service Worker（缓存与离线）
+
+- 作用：预缓存核心静态资源；离线可用；减少二次加载成本
+- 排查缓存：可在 `index.html` 中设置 `meta[name="ha:sw:disabled"] = 1` 禁用
+- 发布策略：更新 `sw.js` 的 `CACHE_NAME` 以控制缓存版本
+
+### 7.5 单元测试（Node 原生）
+
+- 命令：`node --test` 或 `npm test`
+- 目标：为新增基础模块提供最小可信保障（logger/telemetry 等）
