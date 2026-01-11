@@ -119,6 +119,42 @@
 
 ---
 
+## 运行时可观测性（assets/ha/*）
+
+本仓库新增 `assets/ha/*` 作为“运行时守护层”，遵循开闭原则：尽量不侵入既有业务模块，通过增量扩展补齐稳定性与可观测性能力。
+
+- `assets/ha/boot.mjs`：启动入口（在 `assets/app.js` 前加载），负责装配与配置
+- `assets/ha/error-boundary.mjs`：全局错误捕获（`error` / `unhandledrejection`）+ 覆盖层 UI（可复制）
+- `assets/ha/logger.mjs`：结构化日志（可按级别过滤，支持 child scope）
+- `assets/ha/telemetry.mjs`：事件队列 + 可选上报（默认不启用）
+- `assets/ha/perf.mjs`：Web Vitals 采集（TTFB/FCP/LCP/CLS）
+
+可选配置（通过 `index.html` 的 meta 或 localStorage）：
+
+- `meta[name="ha:telemetry:endpoint"]`：启用 Telemetry 上报地址
+- `localStorage["ha:logLevel"]`：日志级别（`debug`/`info`/`warn`/`error`/`silent`）
+- `meta[name="ha:sw:disabled"] = "1"`：禁用 Service Worker（排查缓存时使用）
+
+## 原子设计层（assets/ui.css）
+
+在原有样式之上叠加 `assets/ui.css`，以 CSS `@layer` 方式提供“设计系统层”，实现原子设计分层：
+
+- `tokens`：设计令牌（颜色/间距/圆角/阴影/字体等）
+- `base`：基础样式（背景、排版、可访问性、Reduced Motion）
+- `atoms/molecules/organisms`：组件层（基础按钮/卡片/布局与结构）
+- `utilities`：工具类（低耦合辅助类）
+- `legacy-overrides`：对既有结构的非侵入式视觉增强
+
+## Service Worker（sw.js）
+
+新增根目录 `sw.js` 作为离线与缓存加速层：
+
+- **预缓存**：安装阶段缓存核心静态资源（HTML/CSS/JS/manifest 等）
+- **导航请求**：network-first，弱网/离线回退缓存
+- **静态资源**：cache-first，首次请求后写入缓存
+
+缓存版本通过 `sw.js` 内部 `CACHE_NAME` 控制，建议每次发布同步更新以确保缓存刷新策略可控。
+
 ## 工程化自检
 
 本仓库内置无依赖自检脚本：
@@ -135,4 +171,3 @@ node scripts/validate.js
 - 禁止 `alert()` / `console.*` / `debugger`
 
 对应 CI：`.github/workflows/ci.yml`
-

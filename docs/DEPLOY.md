@@ -43,3 +43,13 @@ GitHub Pages 支持自定义域名，按 Pages 页面提示配置即可。
 - [ ] `index.html` 的 `?v=...` 已同步更新（CSS/JS/favicon/manifest 版本一致）
 - [ ] `node scripts/validate.js` 本地自检通过（无依赖）
 - [ ] GitHub Actions CI 通过（`.github/workflows/ci.yml`）
+
+
+### 3) Service Worker 缓存导致更新不生效？
+
+本项目引入了 `sw.js` 进行预缓存与离线支持。若你更新上线后仍看到旧内容：
+
+- 首选：等待 Service Worker 自动更新后刷新页面（通常 1-2 次刷新即可）
+- 快速排查：临时在 `index.html` 添加 `<meta name="ha:sw:disabled" content="1" />` 禁用 SW
+- 强制刷新：在浏览器 DevTools → Application → Service Workers/Caches 清理缓存
+- 发布策略：每次发布建议同步更新 `sw.js` 内的 `CACHE_NAME`（缓存版本号）
